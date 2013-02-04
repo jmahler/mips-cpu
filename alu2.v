@@ -19,18 +19,22 @@ module alu2(ctl, a, b, out, z);
 	wire [31:0] a_n, b_n;
 	wire [31:0] _b;
 	wire		cin;
+	wire		sign;
 
-	full_add32 a32_1(.a(a), .b(_b), .cin(cin), .s(add_ab));
+	full_add32 a32_1(.a(a), .b(_b), .cin(cin), .s(add_ab), .sign(sign));
+
 	assign sub_ab = add_ab;
 
+	assign slt_ab = {{31{1'b0}}, sign};
+
 	localparam [3:0]
-		CTL_ADD = 4'b0010,
-		CTL_AND = 4'b0000,
-		CTL_NOR = 4'b1100,
-		CTL_OR  = 4'b0001,
-		CTL_SLT = 4'b0111,
-		CTL_SUB = 4'b0110,
-		CTL_XOR = 4'b1101;
+		CTL_ADD = 4'b0010,  // 2
+		CTL_AND = 4'b0000,  // 0
+		CTL_NOR = 4'b1100,  // 12
+		CTL_OR  = 4'b0001,  // 1
+		CTL_SLT = 4'b0111,  // 7
+		CTL_SUB = 4'b0110,  // 6
+		CTL_XOR = 4'b1101;  // 13
 
 	// b can be negated to perform subtraction with adder
 	assign b_n = ~b;
@@ -45,10 +49,6 @@ module alu2(ctl, a, b, out, z);
 	assign xor_ab = a ^ b;
 
 	assign z = (32'd0 == out);
-
-	// the sign bit of a subtraction is equivalent to less than
-	// (e.g. 2 - 3 = -1)
-	assign slt_ab = sub_ab[31] ? 1 : 0;
 
 	always @(*)
 		case (ctl)
