@@ -1,0 +1,5 @@
+alu
+alu_tb
+*.swp
+*.vcd
+mux4to1
