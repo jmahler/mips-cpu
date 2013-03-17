@@ -1,3 +1,5 @@
+`ifndef _alu
+`define _alu
 
 module alu(ctl, a, b, out, z);
 	input [3:0] ctl;
@@ -44,3 +46,5 @@ module alu(ctl, a, b, out, z);
 			default: out <= 0;
 		endcase
 endmodule
+
+`endif

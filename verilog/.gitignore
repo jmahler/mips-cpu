@@ -3,3 +3,8 @@ alu_tb
 *.swp
 *.vcd
 mux4to1
+IM
+PC
+PC_IM_tb
+a.out
+binahex
