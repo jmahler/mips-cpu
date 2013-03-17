@@ -8,18 +8,18 @@
  * the .START_ADDR parameter.
  */
 
-`ifndef _PC
-`define _PC
+`ifndef _pc
+`define _pc
 
-module PC(clk, PC_out);
+module pc(clk, pc_out);
 	parameter START_ADDR = 0;
 
 	input clk;
 
-	output reg [31:0] PC_out = START_ADDR;
+	output reg [31:0] pc_out = START_ADDR;
 
 	always @(posedge clk) begin
-		PC_out <= PC_out + 4;
+		pc_out <= pc_out + 4;
 	end
 endmodule
 

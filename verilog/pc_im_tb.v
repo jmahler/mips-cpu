@@ -1,7 +1,7 @@
-`include "PC.v"
-`include "IM.v"
+`include "pc.v"
+`include "im.v"
 
-module PC_IM_tb;
+module pc_im_tb;
 
 	integer i = 0;
 	integer n = 0;
@@ -10,10 +10,10 @@ module PC_IM_tb;
 	reg clk;
 
 	wire [31:0] addr;
-	wire [31:0] IM_out;
+	wire [31:0] im_out;
 
-	PC #(.START_ADDR(0)) PC1(.clk(clk), .PC_out(addr));
-	IM #(.NMEM(20), .IM_DATA("IM_DATA.txt")) IM1(.addr(addr), .out(IM_out));
+	pc #(.START_ADDR(0)) pc1(.clk(clk), .pc_out(addr));
+	im #(.NMEM(20), .IM_DATA("im_data.txt")) im1(.addr(addr), .out(im_out));
 
 	always begin
 		clk <= ~clk;
@@ -37,25 +37,25 @@ module PC_IM_tb;
 	// Check the first few instructions
 	initial begin
 		@(posedge clk);
-		if (IM_out != 32'h20000000) begin
+		if (im_out != 32'h20000000) begin
 			$display("first instruction wrong.\n");
 		end
 
 		@(posedge clk);
-		if (IM_out != 32'h20800000) begin
-			$display("second instruction wrong: %x.\n", IM_out);
+		if (im_out != 32'h20800000) begin
+			$display("second instruction wrong: %x.\n", im_out);
 		end
 
 		@(posedge clk);
-		if (IM_out != 32'h01000820) begin
-			$display("third instruction wrong: %x.\n", IM_out);
+		if (im_out != 32'h01000820) begin
+			$display("third instruction wrong: %x.\n", im_out);
 		end
 
 	end
 
 	initial begin
-		$dumpfile("PC_IM_tb.vcd");
-		$dumpvars(0, PC_IM_tb);
+		$dumpfile("pc_im_tb.vcd");
+		$dumpvars(0, pc_im_tb);
 
 		clk <= 1'b0;
 

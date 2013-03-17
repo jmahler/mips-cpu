@@ -1,9 +1,9 @@
 
 OBJS = mux4to1 \
 	   alu alu_tb \
-	   PC \
-	   IM \
-	   PC_IM_tb \
+	   pc \
+	   im \
+	   pc_im_tb \
 	   binahex
 
 all: $(OBJS)
@@ -13,9 +13,9 @@ all: $(OBJS)
 
 alu_tb: alu
 
-PC_IM_tb: PC IM
+pc_im_tb: pc im
 
-#PC_IM_tb.vcd: PC_IM_tb
+#pc_im_tb.vcd: pc_im_tb
 #	./$<
 
 binahex: binahex.c

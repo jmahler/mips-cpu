@@ -17,10 +17,10 @@
  *  
  */
 
-`ifndef _IM
-`define _IM
+`ifndef _im
+`define _im
 
-module IM(addr, out);
+module im(addr, out);
 	parameter NMEM = 128;  // Number of memory entries
 	parameter IM_DATA = "IM_DATA.txt";
 
