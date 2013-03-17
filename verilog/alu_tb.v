@@ -65,7 +65,6 @@ module alu_tb;
 		end
 	endtask
 
-	// both ALU's will be tested, they should have identical results
 	alu alu1(.ctl(ctl), .a(a), .b(b), .out(out1), .z(z1));
 
 	always begin

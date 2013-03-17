@@ -1,10 +1,11 @@
 
-OBJS = mux4to1 \
-	   alu alu_tb \
-	   pc \
-	   im \
-	   pc_im_tb \
-	   binahex
+OBJS =	mux4to1 \
+		alu alu_tb \
+		pc \
+		im \
+		pc_im_tb \
+		binahex \
+		alu_control alu_control_tb
 
 all: $(OBJS)
 
