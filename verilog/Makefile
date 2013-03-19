@@ -6,6 +6,7 @@ OBJS =	mux4to1 \
 		pc_im_tb \
 		binahex \
 		alu_control alu_control_tb \
+		control \
 		regm
 
 all: $(OBJS)
