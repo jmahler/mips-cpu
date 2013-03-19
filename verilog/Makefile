@@ -3,6 +3,7 @@ OBJS =	mux4to1 \
 		alu alu_tb \
 		pc \
 		im \
+		dm dm_tb \
 		pc_im_tb \
 		binahex \
 		alu_control alu_control_tb \
