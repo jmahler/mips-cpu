@@ -35,7 +35,7 @@ module control(opcode, regdst, branch, memread, memtoreg, aluop, memwrite,
 
 	assign alusrc = and1 | and2 | and5;
 
-	assign regwrite = and3 | and5;
+	assign regwrite = ~(and3 | and5);
 endmodule
 
 `endif

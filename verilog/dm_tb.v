@@ -55,7 +55,8 @@ module dm_tb;
 		wr <= 0;
 		rd <= 1;
 		@(posedge clk);
-		if (rdata != 6) begin
+		if (rdata == 6) begin
+		end else begin
 			$display("mem[%d] = %d, expected %d", addr, rdata, 6);
 			err = err + 1;
 		end
@@ -64,7 +65,8 @@ module dm_tb;
 		wr <= 0;
 		rd <= 1;
 		@(posedge clk);
-		if (rdata != 128) begin
+		if (rdata == 128) begin
+		end else begin
 			$display("mem[%d] = %d, expected %d", addr, rdata, 128);
 			err = err + 1;
 		end
@@ -73,7 +75,8 @@ module dm_tb;
 		wr <= 0;
 		rd <= 1;
 		@(posedge clk);
-		if (rdata != 12) begin
+		if (rdata == 12) begin
+		end else begin
 			$display("mem[%d] = %d, expected %d", addr, rdata, 12);
 			err = err + 1;
 		end

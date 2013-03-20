@@ -9,11 +9,15 @@ module pc_im_tb;
 
 	reg clk;
 
-	wire [31:0] addr;
-	wire [31:0] im_out;
+	wire [31:0] pcaddr;
+	wire [31:0] imout;
+	wire [6:0] imaddr;
 
-	pc #(.START_ADDR(0)) pc1(.clk(clk), .pc_out(addr));
-	im #(.NMEM(20), .IM_DATA("im_data.txt")) im1(.addr(addr), .out(im_out));
+	pc #(.START_ADDR(0)) pc1(.clk(clk), .pc_out(pcaddr));
+
+	assign imaddr = pcaddr[8:2]; // right shift 2, lowest 7 bits
+
+	im #(.NMEM(20), .IM_DATA("im_data.txt")) im1(.addr(imaddr), .out(imout));
 
 	always begin
 		clk <= ~clk;
@@ -25,9 +29,9 @@ module pc_im_tb;
 	always @(posedge clk) begin
 		n <= n + 1;
 
-		if (addr != n*4) begin
+		if (pcaddr != n*4) begin
 			$display("incorrect PC at %d, expected %d, got %d",
-				n, n*4, addr);
+				n, n*4, pcaddr);
 
 			err = err + 1;
 		end
@@ -37,18 +41,24 @@ module pc_im_tb;
 	// Check the first few instructions
 	initial begin
 		@(posedge clk);
-		if (im_out != 32'h20000000) begin
-			$display("first instruction wrong.\n");
+		if (imout == 32'h20000000) begin
+		end else begin
+			err = err + 1;
+			$display("first instruction wrong.");
 		end
 
 		@(posedge clk);
-		if (im_out != 32'h20800000) begin
-			$display("second instruction wrong: %x.\n", im_out);
+		if (imout == 32'h20800000) begin
+		end else begin
+			err = err + 1;
+			$display("second instruction wrong: %x.", imout);
 		end
 
 		@(posedge clk);
-		if (im_out != 32'h01000820) begin
-			$display("third instruction wrong: %x.\n", im_out);
+		if (imout == 32'h01000820) begin
+		end else begin
+			err = err + 1;
+			$display("third instruction wrong: %x.", imout);
 		end
 
 	end

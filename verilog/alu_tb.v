@@ -170,9 +170,9 @@ module alu_tb;
 		@(posedge clk);
 
 		if (errors > 0)
-			$display("%d tests out of %d failed.\n", errors, tests);
+			$display("%d tests out of %d failed.", errors, tests);
 		else
-			$display("All %d tests passed.\n", tests);
+			$display("All %d tests passed.", tests);
 
 		$finish;
 	end

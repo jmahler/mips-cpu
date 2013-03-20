@@ -4,8 +4,8 @@
  * Given a 32-bit address from the program counter (PC)
  * it outputs the data at that address.
  *
- * Currently it supports 7 address bits, bits 8:2 (word aligned).
- * This results in 128 bytes of memory.
+ * Currently it supports 7 address bits resulting in
+ * 128 bytes of memory.
  *
  * The memory is initialized by using the Verilog $readmemh
  * (read memory in hex format, ascii) operation. 
@@ -24,19 +24,16 @@ module im(addr, out);
 	parameter NMEM = 128;  // Number of memory entries
 	parameter IM_DATA = "IM_DATA.txt";
 
-	input wire [31:0] addr;
-	output wire [31:0] out;
+	input wire 	[6:0] 	addr;
+	output wire [31:0] 	out;
 
-	wire [6:0] raddr;
 	reg [31:0] mem [0:127];  // 32-bit memory with 128 entries
 
 	initial begin
 		$readmemh(IM_DATA, mem, 0, NMEM-1);
 	end
 
-	assign raddr = addr[8:2];
-
-	assign out = mem[raddr][31:0];
+	assign out = mem[addr][31:0];
 
 endmodule
 
