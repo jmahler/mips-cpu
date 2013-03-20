@@ -3,7 +3,9 @@ OBJS =	pc pc_tb pc_tb.vcd \
 		im \
 		regm \
 		alu \
-		dm
+		dm \
+		control alu_control \
+		five_stage_mips
 
 all: $(OBJS)
 

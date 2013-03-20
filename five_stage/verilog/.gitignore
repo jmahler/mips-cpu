@@ -4,3 +4,6 @@ im
 regm
 alu
 dm
+alu_control
+control
+five_stage_mips
