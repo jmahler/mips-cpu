@@ -2,7 +2,8 @@
 OBJS =	pc pc_tb pc_tb.vcd \
 		im \
 		regm \
-		alu
+		alu \
+		dm
 
 all: $(OBJS)
 
