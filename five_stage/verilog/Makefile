@@ -1,5 +1,6 @@
 
-OBJS =	pc pc_tb pc_tb.vcd
+OBJS =	pc pc_tb pc_tb.vcd \
+		im
 
 all: $(OBJS)
 
