@@ -1,6 +1,7 @@
 
 OBJS =	pc pc_tb pc_tb.vcd \
-		im
+		im \
+		regm
 
 all: $(OBJS)
 
