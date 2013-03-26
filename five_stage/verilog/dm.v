@@ -8,12 +8,11 @@
  * Any time the read signal (rd) is high the data stored at the
  * given address (addr) will be placed on 'rdata'.
  *
- * Data can be written simultaneously.
- * When the write signal (wr) is high the data on 'wdata' will
+ * Any time the write signal (wr) is high the data on 'wdata' will
  * be stored at the given address (addr).
  * 
- * While data can be read and written simultaneously, the data
- * written will not be available to read until the next clock step.
+ * If a simultaneous read/write is performed the data written
+ * can be immediately read out.
  */
 
 `ifndef _dm
@@ -35,7 +34,8 @@ module dm(clk, addr, rd, wr, wdata, rdata);
 		end
 	end
 
-	assign rdata = mem[addr][31:0];
+	assign rdata = wr ? wdata : mem[addr][31:0];
+	// During a write, avoid the one cycle delay by reading from 'wdata'
 
 endmodule
 

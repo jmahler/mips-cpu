@@ -1,8 +1,8 @@
 VCD info: dumpfile dm_tb.vcd opened for output.
 addr,  rd, wr, rdata,    wdata
 00,    0,  0,  xxxxxxxx, xxxxxxxx
-00,    0,  1,  xxxxxxxx, abcdef01
-01,    0,  1,  xxxxxxxx, ffffaaaa
+00,    0,  1,  abcdef01, abcdef01
+01,    0,  1,  ffffaaaa, ffffaaaa
 00,    1,  0,  abcdef01, ffffaaaa
 01,    1,  0,  ffffaaaa, ffffaaaa
-00,    1,  1,  abcdef01, fefefefe
+00,    1,  1,  fefefefe, fefefefe
