@@ -1,5 +1,5 @@
 
-OBJS =	pc_tb pc_tb.vcd
+OBJS =	pc_tb pc_tb.vcd dm_tb dm_tb.vcd
 
 all: $(OBJS)
 
@@ -7,6 +7,9 @@ all: $(OBJS)
 	iverilog -I../ -g2005 -o$@ $<
 
 pc_tb.vcd: pc_tb
+	./$<
+
+dm_tb.vcd: dm_tb
 	./$<
 
 clean:

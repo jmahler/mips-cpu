@@ -3,12 +3,17 @@
  *
  * 32-bit data with a 7 bit address (128 entries).
  *
- * Data is written by applying data to wdata and then
- * setting read low and write high.  On the negedge
- * of the clock the data will be latched.
+ * The read and write operations operate somewhat independently.
  *
- * When read (rd) is high and write (wr) is low data
- * can be read out.
+ * Any time the read signal (rd) is high the data stored at the
+ * given address (addr) will be placed on 'rdata'.
+ *
+ * Data can be written simultaneously.
+ * When the write signal (wr) is high the data on 'wdata' will
+ * be stored at the given address (addr).
+ * 
+ * While data can be read and written simultaneously, the data
+ * written will not be available to read until the next clock step.
  */
 
 `ifndef _dm
