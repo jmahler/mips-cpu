@@ -20,19 +20,17 @@ module dm(clk, addr, rd, wr, wdata, rdata);
 	input wire	[6:0]	addr;
 	input wire			rd, wr;
 	input wire 	[31:0]	wdata;
-	output reg	[31:0]	rdata;
+	output wire	[31:0]	rdata;
 
 	reg [31:0] mem [0:127];  // 32-bit memory with 128 entries
 
-	always @(negedge clk) begin
+	always @(posedge clk) begin
 		if (wr) begin
 			mem[addr] <= wdata;
 		end
 	end
 
-	always @(posedge clk) begin
-		rdata <= mem[addr][31:0];
-	end
+	assign rdata = mem[addr][31:0];
 
 endmodule
 

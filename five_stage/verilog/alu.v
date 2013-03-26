@@ -1,8 +1,7 @@
 `ifndef _alu
 `define _alu
 
-module alu(clk, ctl, a, b, out, z);
-	input				clk;
+module alu(ctl, a, b, out, z);
 	input		[3:0]	ctl;
 	input		[31:0]	a, b;
 	output reg	[31:0]	out;
@@ -32,7 +31,7 @@ module alu(clk, ctl, a, b, out, z);
 	// set if less than, 2s compliment 32-bit numbers
 	assign slt = oflow_sub ? ~(a[31]) : a[31];
 
-	always @(posedge clk) begin
+	always @(*) begin
 		case (ctl)
 			4'b0010: out <= add_ab;
 			4'b0000: out <= a & b;

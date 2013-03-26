@@ -7,3 +7,11 @@ dm
 alu_control
 control
 five_stage_mips
+stage1_if
+stage2_id
+stage3_ex
+stage4_mem
+stage5_wb
+cpu
+*BAK*
+*.bak
