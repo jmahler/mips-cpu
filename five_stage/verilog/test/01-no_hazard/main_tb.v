@@ -11,6 +11,8 @@
 
 module main_tb;
 
+	parameter N = 14;
+
 	integer i = 0;
 
 	reg			clk;
@@ -34,7 +36,7 @@ module main_tb;
 	wire [31:0] wb_regdata;
 	wire 		wb_regwrite;
 
-	cpu #(.NMEM(17), .IM_DATA("main.hex"))
+	cpu #(.NMEM(N), .IM_DATA("main.hex"))
 			mips1(.clk(clk),
 				.if_pc(if_pc), .if_instr(if_instr),
 				.id_regrs(id_regrs), .id_regrt(id_regrt),
@@ -62,7 +64,7 @@ module main_tb;
 					mem_memdata, mem_memread, mem_memwrite,
 					wb_regdata, wb_regwrite);
 
-		for (i = 0; i < 17 + 5; i = i + 1) begin
+		for (i = 0; i < N + 5; i = i + 1) begin
 			@(posedge clk);
 		end
 
