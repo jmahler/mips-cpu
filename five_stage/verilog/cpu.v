@@ -28,10 +28,10 @@ module cpu(clk,
 		s1(.clk(clk),
 			.if_pc(if_pc), .if_instr(if_instr),
 			.pc_src(pcsrc4), .pc_addr(pc4_3),
-			.pc_p4(pc_p4_1), .im_out(inst));
+			.pc_p4(pc4_1), .im_out(inst));
 
 	// outputs to next stage
-	wire [31:0] pc_p4_1;
+	wire [31:0] pc4_1;
 	wire [31:0] inst;
 
 	// diagnostic outputs
@@ -44,7 +44,7 @@ module cpu(clk,
 
 	stage2_id s2(.clk(clk), .inst(inst),
 			.id_regrs(id_regrs), .id_regrt(id_regrt),
-			.pc_p4_in(pc_p4_1), .pc_p4(pc_p4_2),
+			.pc4(pc4_1), .pc4_out(pc4_2),
 			.rt(rt), .rd(rd), .seimm(seimm2),
 			.regdst(regdst), .branch(branch),
 			.memread(memread), .memtoreg(memtoreg),
@@ -62,7 +62,7 @@ module cpu(clk,
 	wire		memwrite;
 	wire		memtoreg;
 	wire		regwrite2;
-	wire [31:0] pc_p4_2;
+	wire [31:0] pc4_2;
 	wire		regdst;
 	wire [1:0]	aluop;
 	wire		alusrc;
@@ -83,7 +83,7 @@ module cpu(clk,
 			.branch_out(branch3), .memread_out(memread3),
 			.memwrite_out(memwrite3), .memtoreg_out(memtoreg3),
 			.regwrite(regwrite2), .regwrite_out(regwrite3),
-			.pc4_out(pc4_3),
+			.pc4(pc4_2), .pc4_out(pc4_3),
 			.alusrc(alusrc), .data1(data1), .data2(data2),
 			.alurslt(alurslt3), .zero(zero), .data2_out(data2_3),
 			.aluop(aluop), .seimm(seimm2),

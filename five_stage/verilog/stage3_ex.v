@@ -20,7 +20,7 @@ module stage3_ex(clk,
 			branch, memread, memwrite, memtoreg,
 			branch_out, memread_out, memwrite_out, memtoreg_out,
 			regwrite, regwrite_out,
-			pc4_out,
+			pc4, pc4_out,
 			alusrc, data1, data2, alurslt, zero, data2_out,
 			aluop, seimm,
 			regdst, rt, rd, wrreg_out);
@@ -70,6 +70,8 @@ module stage3_ex(clk,
 
 	wire [31:0] seimm_sl2;
 	assign seimm_sl2 = {seimm[29:0], 2'b0};  // shift left 2
+
+	input wire [31:0] pc4;
 
 	wire [31:0] _pc4_out;
 	assign _pc4_out = pc4 + seimm_sl2;

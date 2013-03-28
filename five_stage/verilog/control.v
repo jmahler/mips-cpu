@@ -29,7 +29,7 @@ module control(opcode, regdst, branch, memread, memtoreg, aluop, memwrite,
 	assign memtoreg = and4;
 
 	assign aluop[0] = and3;
-	assign aluop[1] = ~(and1 | and2 | and5);
+	assign aluop[1] = ~(and1 | and2 | and3 | and5);
 
 	assign memwrite = and5;
 

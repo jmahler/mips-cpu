@@ -15,7 +15,7 @@
 
 module stage2_id(clk, inst,
 			id_regrs, id_regrt,
-			pc_p4_in, pc_p4, rt, rd, seimm,
+			pc4, pc4_out, rt, rd, seimm,
 			regdst, branch, memread, memtoreg,
 			aluop, memwrite, alusrc, regwrite_out,
 			regwrite, wrreg, wrdata, data1, data2);
@@ -35,11 +35,11 @@ module stage2_id(clk, inst,
 	// {{{ Program Counter (PC)
 
 	// PC + 4 to next stage
-	input 	wire [31:0]	pc_p4_in;
-	output 	reg  [31:0]	pc_p4;
+	input 	wire [31:0]	pc4;
+	output 	reg  [31:0]	pc4_out;
 
 	always @(posedge clk) begin
-		pc_p4 <= pc_p4_in;
+		pc4_out <= pc4;
 	end
 
 	// }}}
