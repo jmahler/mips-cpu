@@ -20,13 +20,13 @@
 `ifndef _im
 `define _im
 
-module im(clk, addr, out);
+module im(
+		input wire			clk,
+		input wire 	[6:0] 	addr,
+		output reg [31:0] 	out);
+
 	parameter NMEM = 128;  // Number of memory entries
 	parameter IM_DATA = "im_data.txt";
-
-	input wire			clk;
-	input wire 	[6:0] 	addr;
-	output reg [31:0] 	out;
 
 	reg [31:0] mem [0:127];  // 32-bit memory with 128 entries
 

@@ -21,21 +21,20 @@
 
 `include "im.v"
 
-module stage1_if(clk, pc_src, pc_addr, pc_p4, im_out, if_pc, if_instr);
+module stage1_if(
+		// control inputs and data outputs
+		input wire			clk,
+		input wire			pc_src,  // 1 -> use pc_addr, 0 -> PC + 4
+		input wire  [31:0]	pc_addr,
+		output reg  [31:0]	pc_p4,  // PC + 4
+		output wire [31:0]	im_out,	// instruction memory output
+
+		// diagnostic outputs
+		output wire [31:0]	if_pc,
+		output wire [31:0]	if_instr);
 
 	parameter NMEM = 128;
 	parameter IM_DATA = "im_data.txt";
-
-	// control inputs and data outputs
-	input wire			clk;
-	input wire			pc_src;  // 1 -> use pc_addr, 0 -> PC + 4
-	input wire [31:0]	pc_addr;
-	output reg [31:0]	pc_p4;  // PC + 4
-	output wire [31:0]	im_out;	// instruction memory output
-
-	// diagnostic outputs
-	output wire [31:0] if_pc;
-	output wire [31:0] if_instr;
 
 	assign if_pc = pc;
 

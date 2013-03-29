@@ -17,12 +17,11 @@
 `ifndef _pc
 `define _pc
 
-module pc(clk, pc, branch, baddr);
-
-	input 				clk;
-	output		[31:0]	pc;
-	input				branch;
-	input		[31:0]	baddr;  // branch address (relative)
+module pc(
+		input 				clk,
+		output		[31:0]	pc,
+		input				branch,
+		input		[31:0]	baddr);  // branch address (relative)
 
 	reg 		b1 = 1'b0;  // branch in stage 1
 	reg	[31:0]	pc0 = 32'd0;

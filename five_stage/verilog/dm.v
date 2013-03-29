@@ -18,13 +18,12 @@
 `ifndef _dm
 `define _dm
 
-module dm(clk, addr, rd, wr, wdata, rdata);
-
-	input wire			clk;
-	input wire	[6:0]	addr;
-	input wire			rd, wr;
-	input wire 	[31:0]	wdata;
-	output wire	[31:0]	rdata;
+module dm(
+		input wire			clk,
+		input wire	[6:0]	addr,
+		input wire			rd, wr,
+		input wire 	[31:0]	wdata,
+		output wire	[31:0]	rdata);
 
 	reg [31:0] mem [0:127];  // 32-bit memory with 128 entries
 

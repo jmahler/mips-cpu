@@ -1,7 +1,6 @@
 
 OBJS =	pc im regm alu dm control alu_control \
-		five_stage_mips \
-		stage1_if stage2_id stage3_ex stage4_mem \
+		stage1_if stage2_id stage3_ex stage4_mem stage5_wb \
 		cpu
 
 all: $(OBJS)
@@ -17,7 +16,7 @@ stage3_ex: alu alu_control
 
 stage4_mem: dm
 
-cpu: stage1_if stage2_id stage3_ex stage4_mem
+cpu: stage1_if stage2_id stage3_ex stage4_mem stage5_wb
 
 clean:
 	-rm -f $(OBJS)

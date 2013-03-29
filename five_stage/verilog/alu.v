@@ -1,11 +1,11 @@
 `ifndef _alu
 `define _alu
 
-module alu(ctl, a, b, out, z);
-	input		[3:0]	ctl;
-	input		[31:0]	a, b;
-	output reg	[31:0]	out;
-	output				z;
+module alu(
+		input		[3:0]	ctl,
+		input		[31:0]	a, b,
+		output reg	[31:0]	out,
+		output				z);
 
 	wire [31:0] sub_ab;
 	wire [31:0] add_ab;

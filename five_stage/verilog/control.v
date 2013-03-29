@@ -1,13 +1,11 @@
 `ifndef _control
 `define _control
 
-module control(opcode, regdst, branch, memread, memtoreg, aluop, memwrite,
-					alusrc, regwrite);
-
-	input wire 	[5:0]	opcode;
-	output wire 		regdst, branch, memread, memtoreg;
-	output wire [1:0]	aluop;
-	output wire			memwrite, alusrc, regwrite;
+module control(
+		input  wire	[5:0]	opcode,
+		output wire 		regdst, branch, memread, memtoreg,
+		output wire [1:0]	aluop,
+		output wire			memwrite, alusrc, regwrite);
 
 	wire 		and1, and2, and3, and4, and5;
 	wire [5:0] 	oc;

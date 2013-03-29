@@ -9,16 +9,29 @@
 `include "stage4_mem.v"
 `include "stage5_wb.v"
 
-module cpu(clk,
-			if_pc, if_instr,
-			id_regrs, id_regrt,
-			ex_alua, ex_alub, ex_aluctl,
-			mem_memdata, mem_memread, mem_memwrite,
-			wb_regdata, wb_regwrite);
+module cpu(
+		input wire clk,
+
+		// diagnostic outputs
+		output wire [31:0] if_pc,		// program counter (PC)
+		output wire [31:0] if_instr,	// instruction read from memory (IM)
+
+		output wire [31:0] id_regrs,
+		output wire [31:0] id_regrt,
+
+		output wire [31:0]	ex_alua,
+		output wire [31:0]	ex_alub,
+		output wire [3:0]	ex_aluctl,
+
+		output wire [31:0]	mem_memdata,
+		output wire			mem_memread,
+		output wire			mem_memwrite,
+
+		output wire [31:0]	wb_regdata,
+		output wire 		wb_regwrite);
+
 	parameter NMEM = 20;
 	parameter IM_DATA = "im_data.txt";
-
-	input wire clk;
 
 	// {{{ stage 1, IF
 
@@ -33,10 +46,6 @@ module cpu(clk,
 	// outputs to next stage
 	wire [31:0] pc4_1;
 	wire [31:0] inst;
-
-	// diagnostic outputs
-	output wire [31:0] if_pc;		// program counter (PC)
-	output wire [31:0] if_instr;	// instruction read from memory (IM)
 
 	// }}}
 
@@ -68,10 +77,6 @@ module cpu(clk,
 	wire		alusrc;
 	wire [31:0]	data1, data2;
 
-	// diagnostic outputs
-	output wire [31:0] id_regrs;
-	output wire [31:0] id_regrt;
-
 	// }}}
 
 	// {{{ stage 3, EX
@@ -102,14 +107,10 @@ module cpu(clk,
 	wire [31:0]	data2_3;
 	wire [4:0]	wrreg3;
 
-	// diagnostic outputs
-	output wire [31:0]	ex_alua;
-	output wire [31:0]	ex_alub;
-	output wire [3:0]	ex_aluctl;
-
 	// }}}
 
 	// {{{ stage 4, MEM
+
 	stage4_mem s4(.clk(clk),
 			.mem_memdata(mem_memdata), .mem_memread(mem_memread),
 			.mem_memwrite(mem_memwrite),
@@ -129,15 +130,11 @@ module cpu(clk,
 	wire 		memtoreg4;
 	wire [4:0]  wrreg4;
 
-	// diagnostic outputs
-	output wire [31:0]	mem_memdata;
-	output wire			mem_memread;
-	output wire			mem_memwrite;
 	// }}}
 			
 	// {{{ stage 5, WB
 
-	stage5_wb s5(.clk(clk),
+	stage5_wb s5(
 			.wb_regdata(wb_regdata), .wb_regwrite(wb_regwrite),
 			.regwrite(regwrite4), .regwrite_out(regwrite5),
 			.memtoreg(memtoreg4),
@@ -149,10 +146,6 @@ module cpu(clk,
 	wire		regwrite5;
 	wire [31:0]	wrdata5;
 	wire [4:0]	wrreg5;
-
-	// diagnostic outputs
-	output wire [31:0]	wb_regdata;
-	output wire 		wb_regwrite;
 
 	// }}}
 

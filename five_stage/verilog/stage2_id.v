@@ -13,36 +13,50 @@
 `include "control.v"
 `include "regm.v"
 
-module stage2_id(clk, inst,
-			id_regrs, id_regrt,
-			pc4, pc4_out, rt, rd, seimm,
-			regdst, branch, memread, memtoreg,
-			aluop, memwrite, alusrc, regwrite_out,
-			regwrite, wrreg, wrdata, data1, data2);
+module stage2_id(
+		// inputs
+		input wire			clk,
+		input wire 	[31:0]	inst,		// instruction
 
-	// inputs
-	input wire			clk;
-	input wire [31:0]	inst;		// instruction
+		// diagnostic outputs
+		output wire [31:0] id_regrs,
+		output wire [31:0] id_regrt,
 
- 	// {{{ diagnostic outputs
-	output wire [31:0] id_regrs;
-	output wire [31:0] id_regrt;
+		// control
+		output reg			regdst,
+		output reg 			branch,
+		output reg			memread,
+		output reg 			memtoreg,
+		output reg [1:0]	aluop,
+		output reg			memwrite,
+		output reg			alusrc,
+		output reg			regwrite_out,
 
+		// PC + 4 to next stage
+		input 	wire [31:0]	pc4,
+		output 	reg  [31:0]	pc4_out,
+
+		// Register Memory
+		input wire          regwrite,	// 1 = write register
+		input wire [4:0]	wrreg,		// register to write
+		input wire [31:0]	wrdata,		// data to write to register
+
+		output reg [31:0] 	data1,
+		output reg [31:0] 	data2,
+
+		// instruction decoding
+		output	reg  [31:0] seimm, // sign extended immediate
+		output 	reg  [4:0]  rt,
+		output 	reg  [4:0]  rd);
+
+ 	// diagnostic outputs
 	assign id_regrs = _data1;  // value read from $rs
 	assign id_regrt = _data2;  // value read from $rt
-	// }}}
-
-	// {{{ Program Counter (PC)
 
 	// PC + 4 to next stage
-	input 	wire [31:0]	pc4;
-	output 	reg  [31:0]	pc4_out;
-
 	always @(posedge clk) begin
 		pc4_out <= pc4;
 	end
-
-	// }}}
 
 	// {{{ Instruction Decoding
 
@@ -66,10 +80,6 @@ module stage2_id(clk, inst,
 	assign _jimm     = inst[25:0];
 	//assign _seimm 	 = {{16{imm[15]}}, imm[15:0]};
 	assign _seimm 	 = {{16{inst[15]}}, inst[15:0]};
-
-	output 	reg  [4:0]  rt;
-	output 	reg  [4:0]  rd;
-	output	reg  [31:0] seimm; // sign extended immediate
 
 	always @(posedge clk) begin
 		rt 		<= _rt;
@@ -95,15 +105,6 @@ module stage2_id(clk, inst,
 				.memwrite(_memwrite), .alusrc(_alusrc),
 				.regwrite(_regwrite_out));
 
-	output reg			regdst;
-	output reg 			branch;
-	output reg			memread;
-	output reg 			memtoreg;
-	output reg [1:0]	aluop;
-	output reg			memwrite;
-	output reg			alusrc;
-	output reg			regwrite_out;
-
 	always @(posedge clk) begin
 		regdst			<= _regdst;
 		branch			<= _branch;
@@ -117,12 +118,6 @@ module stage2_id(clk, inst,
 	// }}}
 
 	// {{{ Register Memory
-	input wire          regwrite;	// 1 = write register
-	input wire [4:0]	wrreg;		// register to write
-	input wire [31:0]	wrdata;		// data to write to register
-
-	output reg [31:0] 	data1, data2;
-
 	wire [31:0] _data1, _data2;
 
 	regm regm1(.clk(clk), .read1(_rs), .read2(_rt),

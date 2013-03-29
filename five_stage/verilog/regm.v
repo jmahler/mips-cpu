@@ -17,14 +17,14 @@
 `ifndef _regm
 `define _regm
 
-module regm(clk, read1, read2, data1, data2, regwrite, wrreg, wrdata);
+module regm(
+		input wire			clk,
+		input wire  [4:0]	read1, read2,
+		output wire [31:0]	data1, data2,
+		input wire			regwrite,
+		input wire	[4:0]	wrreg,
+		input wire	[31:0]	wrdata);
 
-	input wire			clk;
-	input wire  [4:0]	read1, read2;
-	output wire [31:0]	data1, data2;
-	input wire			regwrite;
-	input wire	[4:0]	wrreg;
-	input wire	[31:0]	wrdata;
 
 	reg [31:0] mem [0:31];  // 32-bit memory with 32 entries
 
