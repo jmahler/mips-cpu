@@ -33,16 +33,7 @@ module stage4_mem(
 
 		input wire zero,
 		input wire branch,
-		output wire pcsrc,
-
-		input wire memtoreg,
-		output reg memtoreg_out,
-
-		input wire regwrite,
-		output reg regwrite_out,
-
-		input wire [4:0] wrreg,
-		output reg [4:0] wrreg_out);
+		output wire pcsrc);
 
  	// diagnostic outputs
 	assign mem_memdata = data2;
@@ -63,14 +54,6 @@ module stage4_mem(
 	end
 
 	assign pcsrc = zero & branch;
-
-	// pass through
-
-	always @(posedge clk) begin
-		regwrite_out <= regwrite;
-		memtoreg_out <= memtoreg;
-		wrreg_out	 <= wrreg;
-	end
 
 endmodule
 

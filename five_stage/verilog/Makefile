@@ -1,7 +1,8 @@
 
 OBJS =	pc im regm alu dm control alu_control \
 		stage1_if stage2_id stage3_ex stage4_mem stage5_wb \
-		cpu
+		cpu \
+		reggy
 
 all: $(OBJS)
 

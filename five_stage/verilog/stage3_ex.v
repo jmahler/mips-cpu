@@ -22,21 +22,6 @@ module stage3_ex(
 		output wire [31:0] 	ex_alub,	// lower B input
 		output wire [3:0] 	ex_aluctl,	// 4-bit ALU control input
 
-		// Memory (M) stage
-		input wire			branch,
-		input wire			memread,
-		input wire			memwrite,
-		input wire			memtoreg,
-
-		output reg			branch_out,
-		output reg			memread_out,
-		output reg			memwrite_out,
-		output reg			memtoreg_out,
-
-		// Write Back (WB) stage
-		input wire			regwrite,
-		output reg			regwrite_out,
-
 		// (PC + 4) + (imm << 2)
 		input wire [31:0] 	pc4,
 		output reg [31:0] 	pc4_out,
@@ -66,16 +51,6 @@ module stage3_ex(
 	assign ex_alua = data1;
 	assign ex_alub = alusrc_data2;
 	assign ex_aluctl = aluctl;
-
-	// Control Pass Through for WB and M
-	always @(posedge clk) begin
-		branch_out   <= branch;
-		memread_out  <= memread;
-		memwrite_out <= memwrite;
-		memtoreg_out <= memtoreg;
-
-		regwrite_out <= regwrite;
-	end
 
 	// (PC + 4) + (imm << 2)
 

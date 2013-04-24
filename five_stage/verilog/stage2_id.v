@@ -32,10 +32,6 @@ module stage2_id(
 		output reg			alusrc,
 		output reg			regwrite_out,
 
-		// PC + 4 to next stage
-		input 	wire [31:0]	pc4,
-		output 	reg  [31:0]	pc4_out,
-
 		// Register Memory
 		input wire          regwrite,	// 1 = write register
 		input wire [4:0]	wrreg,		// register to write
@@ -52,11 +48,6 @@ module stage2_id(
  	// diagnostic outputs
 	assign id_regrs = _data1;  // value read from $rs
 	assign id_regrt = _data2;  // value read from $rt
-
-	// PC + 4 to next stage
-	always @(posedge clk) begin
-		pc4_out <= pc4;
-	end
 
 	// {{{ Instruction Decoding
 

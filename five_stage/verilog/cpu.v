@@ -8,6 +8,7 @@
 `include "stage3_ex.v"
 `include "stage4_mem.v"
 `include "stage5_wb.v"
+`include "reggy.v"
 
 module cpu(
 		input wire clk,
@@ -53,7 +54,6 @@ module cpu(
 
 	stage2_id s2(.clk(clk), .inst(inst),
 			.id_regrs(id_regrs), .id_regrt(id_regrt),
-			.pc4(pc4_1), .pc4_out(pc4_2),
 			.rt(rt), .rd(rd), .seimm(seimm2),
 			.regdst(regdst), .branch(branch),
 			.memread(memread), .memtoreg(memtoreg),
@@ -61,6 +61,8 @@ module cpu(
 			.regwrite(regwrite5), .regwrite_out(regwrite2),
 			.wrreg(wrreg5), .wrdata(wrdata5),
 			.data1(data1), .data2(data2));
+
+	reggy #(.N(32)) reg_s2_pc4(.clk(clk), .in(pc4_1), .out(pc4_2));
 
 	// outputs to next stage
 	wire [31:0] seimm2;
@@ -83,17 +85,16 @@ module cpu(
 
 	stage3_ex s3(.clk(clk),
 			.ex_alua(ex_alua), .ex_alub(ex_alub), .ex_aluctl(ex_aluctl),
-			.branch(branch), .memread(memread),
-			.memwrite(memwrite), .memtoreg(memtoreg),
-			.branch_out(branch3), .memread_out(memread3),
-			.memwrite_out(memwrite3), .memtoreg_out(memtoreg3),
-			.regwrite(regwrite2), .regwrite_out(regwrite3),
 			.pc4(pc4_2), .pc4_out(pc4_3),
 			.alusrc(alusrc), .data1(data1), .data2(data2),
 			.alurslt(alurslt3), .zero(zero), .data2_out(data2_3),
 			.aluop(aluop), .seimm(seimm2),
 			.regdst(regdst), .rt(rt), .rd(rd),
 			.wrreg_out(wrreg3));
+
+	reggy #(.N(5)) reg_s3(.clk(clk),
+				.in({branch, memread, memwrite, memtoreg, regwrite2}),
+				.out({branch3, memread3, memwrite3, memtoreg3, regwrite3}));
 
 	// outputs to next stage
 	wire		branch3;
@@ -117,10 +118,14 @@ module cpu(
 			.zero(zero), .branch(branch3), .pcsrc(pcsrc4),
 			.alurslt(alurslt3), .alurslt_out(alurslt4),
 			.memwrite(memwrite3), .memread(memread3),
-			.data2(data2_3), .rdata(rdata4),
-			.regwrite(regwrite3), .regwrite_out(regwrite4),
-			.memtoreg(memtoreg3), .memtoreg_out(memtoreg4),
-			.wrreg(wrreg3), .wrreg_out(wrreg4));
+			.data2(data2_3), .rdata(rdata4));
+			//.regwrite(regwrite3), .regwrite_out(regwrite4),
+			//.memtoreg(memtoreg3), .memtoreg_out(memtoreg4),
+			//.wrreg(wrreg3), .wrreg_out(wrreg4));
+
+	reggy #(.N(7)) reg_s4(.clk(clk),
+				.in({regwrite3, memtoreg3, wrreg3}),
+				.out({regwrite4, memtoreg4, wrreg4}));
 
 	// outputs to next stage
 	wire		pcsrc4;
