@@ -17,5 +17,10 @@ all: $(OBJS)
 main_tb.vcd: main_tb
 	./$<
 
+test: main_tb
+	./main_tb > main_tb.out
+	diff main_tb.out main_tb.check
+
 clean:
 	-rm -f $(OBJS)
+	-rm -f main_tb.out

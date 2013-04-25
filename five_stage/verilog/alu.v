@@ -37,7 +37,7 @@ module alu(
 			4'b0000: out <= a & b;				// and
 			4'b1100: out <= ~(a | b);			// nor
 			4'b0001: out <= a | b;				// or
-			4'b0111: out <= {{30{1'b0}}, slt};	// set if less than
+			4'b0111: out <= {{31{1'b0}}, slt};	// set if less than
 			4'b0110: out <= sub_ab;				// a - b
 			4'b1101: out <= a ^ b;				// xor
 			default: out <= 0;
