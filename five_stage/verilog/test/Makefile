@@ -17,6 +17,7 @@ test:
 	cd 02-branch; make test
 	cd 02-operators; make test
 	cd 04-forward; make test
+	cd 04-stall; make test
 
 clean:
 	-rm -f $(OBJS)
@@ -24,3 +25,4 @@ clean:
 	cd 02-branch; make clean
 	cd 02-operators; make clean
 	cd 04-forward; make clean
+	cd 04-stall; make clean
