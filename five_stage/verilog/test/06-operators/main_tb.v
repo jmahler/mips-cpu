@@ -14,7 +14,7 @@ module main_tb;
 	// number of operations
 	//   $ wc -l main.hex
 	//     30 main.hex
-	parameter N = 35;
+	parameter N = 42;
 
 	integer i = 0;
 

@@ -138,6 +138,10 @@ module cpu(
 			.regwrite(regwrite_s5), .wrreg(wrreg_s5),
 			.wrdata(wrdata_s5));
 
+	// pass rs to stage 3 (for forwarding)
+	wire [4:0] rs_s3;
+	reggy #(.N(5)) reggy_s2_rs(.clk(clk), .in(rs), .out(rs_s3));
+
 	// transfer register data to stage 3
 	wire [31:0]	data1_s3, data2_s3;
 	reggy #(.N(64)) reg_s2_mem(.clk(clk),
@@ -219,14 +223,14 @@ module cpu(
 	assign funct = seimm_s3[5:0];
 	// select ALU data2 source
 	wire [31:0] alusrc_data2;
-	assign alusrc_data2 = (alusrc_s3) ? seimm_s3 : data2_s3;
+	assign alusrc_data2 = (alusrc_s3) ? seimm_s3 : fw_data2_s3;
 	// ALU control
 	wire [3:0] aluctl;
 	alu_control alu_ctl1(.funct(funct), .aluop(aluop_s3), .aluctl(aluctl));
 	// ALU
 	wire [31:0]	alurslt;  // ALU result
 	wire 		zero;
-	alu alu1(.ctl(aluctl), .a(data1_s3), .b(alusrc_data2),
+	alu alu1(.ctl(aluctl), .a(fw_data1_s3), .b(alusrc_data2),
 				.out(alurslt), .z(zero));
 	// pass ALU result and zero to stage 4
 	wire [31:0]	alurslt_s4;
@@ -289,6 +293,45 @@ module cpu(
 	wire [31:0]	wrdata_s5;
 	assign wrdata_s5 = (memtoreg_s5) ? rdata_s5 : alurslt_s5;
 
+	// }}}
+
+	// {{{ forwarding
+
+	// stage 3 (MEM) -> stage 2 (EX)
+	// stage 4 (WB) -> stage 2 (EX)
+
+	reg [31:0] fw_data1_s3;
+	reg [31:0] fw_data2_s3;
+	always @(*) begin
+		// If the previous instruction (stage 4) would write,
+		// and it is a value we want to read (stage 3), forward it.
+
+		// data1 input to ALU
+		if ((regwrite_s4 == 1'b1) && (wrreg_s4 == rs_s3)) begin
+
+			if (memtoreg_s4 == 1'b1)
+				fw_data1_s3 <= rdata;
+			else
+				fw_data1_s3 <= alurslt_s4;
+
+		end else if ((regwrite_s5 == 1'b1) && (wrreg_s5 == rs_s3))
+			fw_data1_s3 <= wrdata_s5;
+		else
+			fw_data1_s3 <= data1_s3;
+
+		// data2 input to ALU
+		if ((regwrite_s4 == 1'b1) & (wrreg_s4 == rt_s3)) begin
+
+			if (memtoreg_s4 == 1'b1)
+				fw_data2_s3 <= rdata;
+			else
+				fw_data2_s3 <= alurslt_s4;
+
+		end else if ((regwrite_s5 == 1'b1) && (wrreg_s5 == rt_s3))
+			fw_data2_s3 <= wrdata_s5;
+		else
+			fw_data2_s3 <= data2_s3;
+	end
 	// }}}
 
 endmodule
