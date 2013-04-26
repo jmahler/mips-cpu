@@ -24,6 +24,8 @@
  */
 
 `include "reggy.v"
+`include "sreggy.v"
+`include "zreggy.v"
 `include "im.v"
 `include "regm.v"
 `include "control.v"
@@ -92,7 +94,9 @@ module cpu(
 	assign pc4 = pc + 4;
 
 	always @(posedge clk) begin
-		if (pcsrc == 1'b1)
+		if (stall_s1_s2) 
+			pc <= pc;
+		else if (pcsrc == 1'b1)
 			pc <= baddr_s4;
 		else
 			pc <= pc4;
@@ -100,13 +104,16 @@ module cpu(
 
 	// pass PC + 4 to stage 2
 	wire [31:0] pc4_s2;
-	reggy #(.N(32)) reggy_pc4_s2(.clk(clk), .in(pc4), .out(pc4_s2));
+	sreggy #(.N(32)) reggy_pc4_s2(.clk(clk), .stall(stall_s1_s2),
+						.in(pc4), .out(pc4_s2));
 
 	// instruction memory
 	wire [31:0] inst;
+	wire [31:0] inst_s2;
 	im #(.NMEM(NMEM), .IM_DATA(IM_DATA))
 		im1(.clk(clk), .addr(pc[8:2]), .out(inst));
-	// The output is already registerd so we don't need to do it ourselves.
+	sreggy #(.N(32)) reggy_im_s2(.clk(clk), .stall(stall_s1_s2),
+						.in(inst), .out(inst_s2));
 
 	// }}}
 
@@ -122,14 +129,14 @@ module cpu(
 	wire [25:0] jimm;  // jump, immediate
 	wire [31:0] seimm;  // sign extended immediate
 	//
-	assign opcode   = inst[31:26];
-	assign rs       = inst[25:21];
-	assign rt       = inst[20:16];
-	assign rd       = inst[15:11];
-	assign imm      = inst[15:0];
-	assign shamt    = inst[10:6];
-	assign jimm     = inst[25:0];
-	assign seimm 	= {{16{inst[15]}}, inst[15:0]};
+	assign opcode   = inst_s2[31:26];
+	assign rs       = inst_s2[25:21];
+	assign rt       = inst_s2[20:16];
+	assign rd       = inst_s2[15:11];
+	assign imm      = inst_s2[15:0];
+	assign shamt    = inst_s2[10:6];
+	assign jimm     = inst_s2[25:0];
+	assign seimm 	= {{16{inst_s2[15]}}, inst_s2[15:0]};
 
 	// register memory
 	wire [31:0] data1, data2;
@@ -140,11 +147,12 @@ module cpu(
 
 	// pass rs to stage 3 (for forwarding)
 	wire [4:0] rs_s3;
-	reggy #(.N(5)) reggy_s2_rs(.clk(clk), .in(rs), .out(rs_s3));
+	sreggy #(.N(5)) reggy_s2_rs(.clk(clk), .stall(stall_s1_s2),
+				.in(rs), .out(rs_s3));
 
 	// transfer register data to stage 3
 	wire [31:0]	data1_s3, data2_s3;
-	reggy #(.N(64)) reg_s2_mem(.clk(clk),
+	sreggy #(.N(64)) reg_s2_mem(.clk(clk), .stall(stall_s1_s2),
 				.in({data1, data2}),
 				.out({data1_s3, data2_s3}));
 
@@ -152,12 +160,15 @@ module cpu(
 	wire [31:0] seimm_s3;
 	wire [4:0] 	rt_s3;
 	wire [4:0] 	rd_s3;
-	reggy #(.N(32)) reg_s2_seimm(.clk(clk), .in(seimm), .out(seimm_s3));
-	reggy #(.N(10)) reg_s2_rt_rd(.clk(clk), .in({rt, rd}), .out({rt_s3, rd_s3}));
+	sreggy #(.N(32)) reg_s2_seimm(.clk(clk), .stall(stall_s1_s2),
+						.in(seimm), .out(seimm_s3));
+	sreggy #(.N(10)) reg_s2_rt_rd(.clk(clk), .stall(stall_s1_s2),
+						.in({rt, rd}), .out({rt_s3, rd_s3}));
 
 	// transfer PC + 4 to stage 3
 	wire [31:0] pc4_s3;
-	reggy #(.N(32)) reg_pc4_s2(.clk(clk), .in(pc4_s2), .out(pc4_s3));
+	sreggy #(.N(32)) reg_pc4_s2(.clk(clk), .stall(stall_s1_s2),
+						.in(pc4_s2), .out(pc4_s3));
 
 	// control (opcode -> ...)
 	wire		regdst;
@@ -184,8 +195,9 @@ module cpu(
 	wire [1:0]	aluop_s3;
 	wire		regwrite_s3;
 	wire		alusrc_s3;
-	//
-	reggy #(.N(9)) reg_s2_control(.clk(clk),
+	// A bubble is inserted by setting all the control signals
+	// to zero (stall_s1_s2).
+	zreggy #(.N(9)) reg_s2_control(.clk(clk), .zero(stall_s1_s2),
 			.in({regdst, branch, memread, memwrite,
 					memtoreg, aluop, regwrite, alusrc}),
 			.out({regdst_s3, branch_s3, memread_s3, memwrite_s3,
@@ -302,35 +314,65 @@ module cpu(
 
 	reg [31:0] fw_data1_s3;
 	reg [31:0] fw_data2_s3;
+	reg		   forward;
 	always @(*) begin
 		// If the previous instruction (stage 4) would write,
 		// and it is a value we want to read (stage 3), forward it.
 
+		forward <= 1'b0;
+
 		// data1 input to ALU
 		if ((regwrite_s4 == 1'b1) && (wrreg_s4 == rs_s3)) begin
-
+			forward <= 1'b1;
+			// Cannot forward data read from memory,
+			// this would significantly increase the critical path.
+			// Instead this hazard is detected in the decode
+			// stage and a stall is performed.
+			/*
 			if (memtoreg_s4 == 1'b1)
-				fw_data1_s3 <= rdata;
+				// stall
+				fw_data1_s3 <= rdata; // XXX
 			else
 				fw_data1_s3 <= alurslt_s4;
+			*/
 
-		end else if ((regwrite_s5 == 1'b1) && (wrreg_s5 == rs_s3))
+			fw_data1_s3 <= alurslt_s4;
+
+		end else if ((regwrite_s5 == 1'b1) && (wrreg_s5 == rs_s3)) begin
+			forward <= 1'b1;
 			fw_data1_s3 <= wrdata_s5;
-		else
-			fw_data1_s3 <= data1_s3;
+		end else
+			fw_data1_s3 <= data1_s3;  // no forwarding
 
 		// data2 input to ALU
 		if ((regwrite_s4 == 1'b1) & (wrreg_s4 == rt_s3)) begin
-
-			if (memtoreg_s4 == 1'b1)
-				fw_data2_s3 <= rdata;
-			else
-				fw_data2_s3 <= alurslt_s4;
-
-		end else if ((regwrite_s5 == 1'b1) && (wrreg_s5 == rt_s3))
+			forward <= 1'b1;
+			fw_data2_s3 <= alurslt_s4;
+		end else if ((regwrite_s5 == 1'b1) && (wrreg_s5 == rt_s3)) begin
+			forward <= 1'b1;
 			fw_data2_s3 <= wrdata_s5;
-		else
-			fw_data2_s3 <= data2_s3;
+		end else
+			fw_data2_s3 <= data2_s3;  // no forwarding
+	end
+	// }}}
+
+	// {{{ load use data hazard detection, signal stall
+
+	/*
+	 * The hazard is detected in the decode (ID, stage 2) stage
+	 * for an operation in the execute stage (EX, stage 3).
+	 *
+	 * In response to this signal IF and ID should be stalled,
+	 * and a bubble inserted in to the EX stage.
+	 * During the next cycle it can be handled with a forward.
+	 */
+	reg stall_s1_s2;
+	always @(*) begin
+		if (memread_s3 == 1'b1 &&
+				( (rt == rt_s3) || (rs == rt_s3))) begin
+			stall_s1_s2 <= 1'b1;  // perform a stall
+		end else
+			stall_s1_s2 <= 1'b0;  // no stall
 	end
 	// }}}
 

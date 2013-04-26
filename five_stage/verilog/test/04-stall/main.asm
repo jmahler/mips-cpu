@@ -14,6 +14,7 @@ add $zero, $zero, $zero		# nop
 add $zero, $zero, $zero
 add $zero, $zero, $zero
 
+# stall and forward required
 lw $3, 4($zero)  # 7
 add $4, $1, $3   # 12
 

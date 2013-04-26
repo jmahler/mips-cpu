@@ -23,7 +23,7 @@
 module im(
 		input wire			clk,
 		input wire 	[6:0] 	addr,
-		output reg [31:0] 	out);
+		output wire [31:0] 	out);
 
 	parameter NMEM = 128;  // Number of memory entries
 	parameter IM_DATA = "im_data.txt";
@@ -34,10 +34,7 @@ module im(
 		$readmemh(IM_DATA, mem, 0, NMEM-1);
 	end
 
-	always @(posedge clk) begin
-		out <= mem[addr][31:0];
-	end
-
+	assign out = mem[addr][31:0];
 endmodule
 
 `endif
