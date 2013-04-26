@@ -7,7 +7,7 @@
 # How to check using the check file
 #   $ diff main_tb.out main_tb.check
 
-OBJS =	main_tb main_tb.vcd
+OBJS =	main_tb
 
 all: $(OBJS)
 
