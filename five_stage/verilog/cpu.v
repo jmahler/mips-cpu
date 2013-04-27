@@ -253,7 +253,7 @@ module cpu(
 
 	// pass data2 to stage 4
 	wire [31:0] data2_s4;
-	reggy #(.N(32)) reg_data2_s3(.clk(clk), .in(data2_s3), .out(data2_s4));
+	reggy #(.N(32)) reg_data2_s3(.clk(clk), .in(fw_data2_s3), .out(data2_s4));
 
 	// write register
 	wire [4:0]	wrreg;
@@ -368,6 +368,9 @@ module cpu(
 	 */
 	reg stall_s1_s2;
 	always @(*) begin
+		// destination of a 'lw' is 'rt'.
+		// A 'add' reads from 'rs' and 'rt'.
+		// A 'sw' reads from 'rs' but also has a 'rt'.
 		if (memread_s3 == 1'b1 &&
 				( (rt == rt_s3) || (rs == rt_s3))) begin
 			stall_s1_s2 <= 1'b1;  // perform a stall
