@@ -356,21 +356,24 @@ module cpu(
 
 	// {{{ load use data hazard detection, signal stall
 
-	/*
-	 * The hazard is detected in the decode (ID, stage 2) stage
-	 * for an operation in the execute stage (EX, stage 3).
+	/* If an operation in stage 4 (MEM) loads from memory (e.g. lw)
+	 * and the operation in stage 3 (EX) depends on this value,
+	 * a stall must be performed.  The memory read cannot 
+	 * be forwarded because memory access is too slow.  It can
+	 * be forwarded from stage 5 (WB) after a stall.
 	 *
-	 * In response to this signal IF and ID should be stalled,
-	 * and a bubble inserted in to the EX stage.
-	 * During the next cycle it can be handled with a forward.
+	 *   lw $1, 16($10)  ; I-type, rt_s3 = $1, memread_s3 = 1
+	 *   sw $1, 32($12)  ; I-type, rs_s2 = $1, memread_s2 = 0
+	 *
+	 *   lw $1, 16($3)  ; I-type, rt_s3 = $1, memread_s3 = 1
+	 *   sw $2, 32($1)  ; I-type, rs_s2 = $1, memread_s2 = 0
+	 *
+	 *   lw  $1, 16($3)  ; I-type, rt_s3 = $1, memread_s3 = 1
+	 *   add $2, $1, $1  ; R-type, rs_s2 = $1, rt_s2 = $1, memread_s2 = 0
 	 */
 	reg stall_s1_s2;
 	always @(*) begin
-		// destination of a 'lw' is 'rt'.
-		// A 'add' reads from 'rs' and 'rt'.
-		// A 'sw' reads from 'rs' but also has a 'rt'.
-		if (memread_s3 == 1'b1 &&
-				( (rt == rt_s3) || (rs == rt_s3))) begin
+		if (memread_s3 == 1'b1 && ((rt == rt_s3) || (rs == rt_s3)) ) begin
 			stall_s1_s2 <= 1'b1;  // perform a stall
 		end else
 			stall_s1_s2 <= 1'b0;  // no stall
