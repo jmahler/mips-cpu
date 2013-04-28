@@ -26,6 +26,7 @@
 `include "reggy.v"
 `include "sreggy.v"
 `include "zreggy.v"
+`include "szreggy.v"
 `include "im.v"
 `include "regm.v"
 `include "control.v"
@@ -97,14 +98,15 @@ module cpu(
 		if (stall_s1_s2) 
 			pc <= pc;
 		else if (pcsrc == 1'b1)
-			pc <= baddr_s4;
+			pc <= baddr_s2;
 		else
 			pc <= pc4;
 	end
 
 	// pass PC + 4 to stage 2
 	wire [31:0] pc4_s2;
-	sreggy #(.N(32)) reggy_pc4_s2(.clk(clk), .stall(stall_s1_s2),
+	szreggy #(.N(32)) reggy_pc4_s2(.clk(clk),
+						.stall(stall_s1_s2), .zero(branch_flush),
 						.in(pc4), .out(pc4_s2));
 
 	// instruction memory
@@ -112,7 +114,8 @@ module cpu(
 	wire [31:0] inst_s2;
 	im #(.NMEM(NMEM), .IM_DATA(IM_DATA))
 		im1(.clk(clk), .addr(pc[8:2]), .out(inst));
-	sreggy #(.N(32)) reggy_im_s2(.clk(clk), .stall(stall_s1_s2),
+	szreggy #(.N(32)) reggy_im_s2(.clk(clk),
+						.stall(stall_s1_s2), .zero(branch_flush),
 						.in(inst), .out(inst_s2));
 
 	// }}}
@@ -186,9 +189,28 @@ module cpu(
 				.memwrite(memwrite), .alusrc(alusrc),
 				.regwrite(regwrite));
 
+	// branch calculation
+	reg pcsrc;
+	always @(*) begin
+		if (branch == 1'b1 && (rs == rt))
+			pcsrc <= 1'b1; // take the branch
+		else
+			pcsrc <= 1'b0;
+	end
+	// signal to flush stage 3
+	wire branch_flush;
+	assign branch_flush = pcsrc;
+
+	// branch calculation
+	// shift left, seimm
+	wire [31:0] seimm_sl2;
+	assign seimm_sl2 = {seimm[29:0], 2'b0};  // shift left 2 bits
+	// branch address
+	wire [31:0] baddr_s2;
+	assign baddr_s2 = pc4_s2 + seimm_sl2;
+
 	// transfer the control signals to stage 3
 	wire		regdst_s3;
-	wire		branch_s3;
 	wire		memread_s3;
 	wire		memwrite_s3;
 	wire		memtoreg_s3;
@@ -197,10 +219,10 @@ module cpu(
 	wire		alusrc_s3;
 	// A bubble is inserted by setting all the control signals
 	// to zero (stall_s1_s2).
-	zreggy #(.N(9)) reg_s2_control(.clk(clk), .zero(stall_s1_s2),
-			.in({regdst, branch, memread, memwrite,
+	zreggy #(.N(8)) reg_s2_control(.clk(clk), .zero(stall_s1_s2),
+			.in({regdst, memread, memwrite,
 					memtoreg, aluop, regwrite, alusrc}),
-			.out({regdst_s3, branch_s3, memread_s3, memwrite_s3,
+			.out({regdst_s3, memread_s3, memwrite_s3,
 					memtoreg_s3, aluop_s3, regwrite_s3, alusrc_s3}));
 	// }}}
 
@@ -209,25 +231,13 @@ module cpu(
 	// pass through some control signals to stage 4
 	wire regwrite_s4;
 	wire memtoreg_s4;
-	wire branch_s4;
 	wire memread_s4;
 	wire memwrite_s4;
-	reggy #(.N(5)) reg_s3(.clk(clk),
-				.in({regwrite_s3, memtoreg_s3, branch_s3, memread_s3,
+	reggy #(.N(4)) reg_s3(.clk(clk),
+				.in({regwrite_s3, memtoreg_s3, memread_s3,
 						memwrite_s3}),
-				.out({regwrite_s4, memtoreg_s4, branch_s4, memread_s4,
+				.out({regwrite_s4, memtoreg_s4, memread_s4,
 						memwrite_s4}));
-
-	// branch calculation
-	// shift left, seimm
-	wire [31:0] seimm_sl2;
-	assign seimm_sl2 = {seimm_s3[29:0], 2'b0};  // shift left 2 bits
-	// branch address
-	wire [31:0] baddr_s3;
-	assign baddr_s3 = pc4_s3 + seimm_sl2;
-	// pass branch address to stage 4
-	wire [31:0] baddr_s4;
-	reggy #(.N(32)) reg_baddr(.clk(clk), .in(baddr_s3), .out(baddr_s4));
 
 	// ALU
 	// decode funct for ALU control
@@ -241,15 +251,13 @@ module cpu(
 	alu_control alu_ctl1(.funct(funct), .aluop(aluop_s3), .aluctl(aluctl));
 	// ALU
 	wire [31:0]	alurslt;  // ALU result
-	wire 		zero;
 	alu alu1(.ctl(aluctl), .a(fw_data1_s3), .b(alusrc_data2),
-				.out(alurslt), .z(zero));
+				.out(alurslt));
 	// pass ALU result and zero to stage 4
 	wire [31:0]	alurslt_s4;
-	wire		zero_s4;
-	reggy #(.N(33)) reg_alurslt(.clk(clk),
-				.in({alurslt, zero}),
-				.out({alurslt_s4, zero_s4}));
+	reggy #(.N(32)) reg_alurslt(.clk(clk),
+				.in({alurslt}),
+				.out({alurslt_s4}));
 
 	// pass data2 to stage 4
 	wire [31:0] data2_s4;
@@ -288,10 +296,6 @@ module cpu(
 	reggy #(.N(32)) reg_alurslt_s4(.clk(clk),
 				.in(alurslt_s4),
 				.out(alurslt_s5));
-
-	// pcsrc
-	wire pcsrc;
-	assign pcsrc = zero_s4 & branch_s4;
 
 	// pass wrreg to stage 5
 	wire [4:0] wrreg_s5;

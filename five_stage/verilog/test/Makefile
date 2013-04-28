@@ -18,6 +18,7 @@ test:
 	cd 02-operators; make test
 	cd 04-forward; make test
 	cd 04-stall; make test
+	cd 06-branch; make test
 	cd 06-lw_sw_forward; make test
 
 clean:
@@ -27,4 +28,5 @@ clean:
 	cd 02-operators; make clean
 	cd 04-forward; make clean
 	cd 04-stall; make clean
+	cd 06-branch; make clean
 	cd 06-lw_sw_forward; make clean
