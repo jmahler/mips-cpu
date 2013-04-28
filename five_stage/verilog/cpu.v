@@ -251,6 +251,13 @@ module cpu(
 	alu_control alu_ctl1(.funct(funct), .aluop(aluop_s3), .aluctl(aluctl));
 	// ALU
 	wire [31:0]	alurslt;  // ALU result
+	reg [31:0] fw_data1_s3;
+	always @(*)
+	case (forward_a)
+			2'd1: fw_data1_s3 = alurslt_s4;
+			2'd2: fw_data1_s3 = wrdata_s5;
+		 default: fw_data1_s3 = data1_s3;
+	endcase
 	alu alu1(.ctl(aluctl), .a(fw_data1_s3), .b(alusrc_data2),
 				.out(alurslt));
 	// pass ALU result and zero to stage 4
@@ -261,6 +268,13 @@ module cpu(
 
 	// pass data2 to stage 4
 	wire [31:0] data2_s4;
+	reg [31:0] fw_data2_s3;
+	always @(*)
+	case (forward_b)
+			2'd1: fw_data2_s3 = alurslt_s4;
+			2'd2: fw_data2_s3 = wrdata_s5;
+		 default: fw_data2_s3 = data2_s3;
+	endcase
 	reggy #(.N(32)) reg_data2_s3(.clk(clk), .in(fw_data2_s3), .out(data2_s4));
 
 	// write register
@@ -316,47 +330,27 @@ module cpu(
 	// stage 3 (MEM) -> stage 2 (EX)
 	// stage 4 (WB) -> stage 2 (EX)
 
-	reg [31:0] fw_data1_s3;
-	reg [31:0] fw_data2_s3;
-	reg		   forward;
+	reg [1:0] forward_a;
+	reg [1:0] forward_b;
 	always @(*) begin
 		// If the previous instruction (stage 4) would write,
 		// and it is a value we want to read (stage 3), forward it.
 
-		forward <= 1'b0;
-
 		// data1 input to ALU
 		if ((regwrite_s4 == 1'b1) && (wrreg_s4 == rs_s3)) begin
-			forward <= 1'b1;
-			// Cannot forward data read from memory,
-			// this would significantly increase the critical path.
-			// Instead this hazard is detected in the decode
-			// stage and a stall is performed.
-			/*
-			if (memtoreg_s4 == 1'b1)
-				// stall
-				fw_data1_s3 <= rdata; // XXX
-			else
-				fw_data1_s3 <= alurslt_s4;
-			*/
-
-			fw_data1_s3 <= alurslt_s4;
-
+			forward_a <= 2'd1;  // stage 4
 		end else if ((regwrite_s5 == 1'b1) && (wrreg_s5 == rs_s3)) begin
-			forward <= 1'b1;
-			fw_data1_s3 <= wrdata_s5;
+			forward_a <= 2'd2;  // stage 5
 		end else
-			fw_data1_s3 <= data1_s3;  // no forwarding
+			forward_a <= 2'd0;  // no forwarding
 
 		// data2 input to ALU
 		if ((regwrite_s4 == 1'b1) & (wrreg_s4 == rt_s3)) begin
-			forward <= 1'b1;
-			fw_data2_s3 <= alurslt_s4;
+			forward_b <= 2'd1;  // stage 5
 		end else if ((regwrite_s5 == 1'b1) && (wrreg_s5 == rt_s3)) begin
-			forward <= 1'b1;
-			fw_data2_s3 <= wrdata_s5;
+			forward_b <= 2'd2;  // stage 5
 		end else
-			fw_data2_s3 <= data2_s3;  // no forwarding
+			forward_b <= 2'd0;  // no forwarding
 	end
 	// }}}
 
