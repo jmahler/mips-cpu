@@ -363,10 +363,10 @@ module cpu(
 	 * be forwarded from stage 5 (WB) after a stall.
 	 *
 	 *   lw $1, 16($10)  ; I-type, rt_s3 = $1, memread_s3 = 1
-	 *   sw $1, 32($12)  ; I-type, rs_s2 = $1, memread_s2 = 0
+	 *   sw $1, 32($12)  ; I-type, rt_s2 = $1, memread_s2 = 0
 	 *
 	 *   lw $1, 16($3)  ; I-type, rt_s3 = $1, memread_s3 = 1
-	 *   sw $2, 32($1)  ; I-type, rs_s2 = $1, memread_s2 = 0
+	 *   sw $2, 32($1)  ; I-type, rt_s2 = $2, rs_s2 = $1, memread_s2 = 0
 	 *
 	 *   lw  $1, 16($3)  ; I-type, rt_s3 = $1, memread_s3 = 1
 	 *   add $2, $1, $1  ; R-type, rs_s2 = $1, rt_s2 = $1, memread_s2 = 0

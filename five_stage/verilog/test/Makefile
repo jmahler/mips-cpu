@@ -20,6 +20,8 @@ test:
 	cd 04-stall; make test
 	cd 06-branch; make test
 	cd 06-lw_sw_forward; make test
+	cd 07-lw_sw; make test
+	cd 08-lw_sw; make test
 
 clean:
 	-rm -f $(OBJS)
@@ -30,3 +32,5 @@ clean:
 	cd 04-stall; make clean
 	cd 06-branch; make clean
 	cd 06-lw_sw_forward; make clean
+	cd 07-lw_sw; make clean
+	cd 08-lw_sw; make clean
