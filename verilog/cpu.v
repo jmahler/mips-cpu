@@ -321,7 +321,7 @@ module cpu(
 	// {{{ stage 5, WB (write back)
 
 	wire [31:0]	wrdata_s5;
-	assign wrdata_s5 = (memtoreg_s5) ? rdata_s5 : alurslt_s5;
+	assign wrdata_s5 = (memtoreg_s5 == 1'b1) ? rdata_s5 : alurslt_s5;
 
 	// }}}
 

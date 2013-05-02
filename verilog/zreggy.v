@@ -29,7 +29,7 @@ module zreggy(
 	parameter N = 8;
 
 	always @(posedge clk) begin
-		if (zero)
+		if (zero == 1'b1)
 			out <= {N{1'b0}};
 		else
 			out <= in;
