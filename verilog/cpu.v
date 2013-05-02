@@ -113,7 +113,7 @@ module cpu(
 	wire [31:0] inst;
 	wire [31:0] inst_s2;
 	im #(.NMEM(NMEM), .IM_DATA(IM_DATA))
-		im1(.clk(clk), .addr(pc[8:2]), .out(inst));
+		im1(.clk(clk), .addr(pc), .data(inst));
 	szreggy #(.N(32)) reggy_im_s2(.clk(clk),
 						.stall(stall_s1_s2), .zero(branch_flush),
 						.in(inst), .out(inst_s2));

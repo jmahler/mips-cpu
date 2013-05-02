@@ -1,5 +1,5 @@
 
-OBJS = pc_tb dm_tb
+OBJS = pc_tb dm_tb im_slow_tb
 
 all: $(OBJS)
 
@@ -10,6 +10,9 @@ pc_tb.vcd: pc_tb
 	./$<
 
 dm_tb.vcd: dm_tb
+	./$<
+
+im_slow_tb.vcd: im_slow_tb
 	./$<
 
 test:
@@ -25,6 +28,7 @@ test:
 
 clean:
 	-rm -f $(OBJS)
+	-rm -f *.vcd
 	cd 01-no_hazard; make clean
 	cd 02-branch; make clean
 	cd 02-operators; make clean
