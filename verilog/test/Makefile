@@ -1,5 +1,5 @@
 
-OBJS = pc_tb dm_tb im_slow_tb
+OBJS = pc_tb dm_tb im_slow_tb im_cached_tb
 
 all: $(OBJS)
 
@@ -13,6 +13,13 @@ dm_tb.vcd: dm_tb
 	./$<
 
 im_slow_tb.vcd: im_slow_tb
+	./$<
+
+.FORCE:
+
+im_cached_tb: im_cached_tb.v .FORCE
+
+im_cached_tb.vcd: im_cached_tb .FORCE
 	./$<
 
 test:

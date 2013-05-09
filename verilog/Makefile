@@ -1,5 +1,5 @@
 
-OBJS =	reggy im im_slow regm control alu alu_control dm cpu
+OBJS =	reggy im im_slow im_cached regm control alu alu_control dm cpu
 
 all: $(OBJS)
 
