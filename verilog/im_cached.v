@@ -99,7 +99,7 @@ module im_cached(
 	//assign block_data	= block[31:0];
 	//
 	//assign data = block_data;
-	assign data = block[31:0];
+	assign data = (rdy == 1'b1) ? mem_data : block[31:0];
 
 	// Update block from memory,
 	// or hold current value.
@@ -127,7 +127,7 @@ module im_cached(
 			block3 <= {1'b1, addr_tag, mem_data};
 	end
 
-	assign hit = (valid && (addr_tag == block_tag)) ? 1'b1 : 1'b0;
+	assign hit = (rdy || (valid && (addr_tag == block_tag))) ? 1'b1 : 1'b0;
 
 endmodule
 
