@@ -6,10 +6,10 @@
  * word (32-bit) blocks.
  * Interfaces to the slow instruction memory (im_slow).
  *
- * On the next clock edge after an address has been asserterd,
+ * On the next clock edge after an address has been asserted,
  * data is valid and can be read if hit is high, otherwise
  * hit will be low and additional cycles will be needed to
- * retrieve the data from (slow) memory (im_slow).
+ * retrieve the data from (slow) memory.
  */
 
 `ifndef _im_cached
