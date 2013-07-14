@@ -1,3 +1,5 @@
 dm_tb
 im_slow_tb
 im_cached_tb
+main_tb.v
+main_tb
