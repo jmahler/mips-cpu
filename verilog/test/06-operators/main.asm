@@ -30,7 +30,7 @@ sw $t2, 20($a0)
 sw $t3, 24($a0)
 
 slt $t0, $a1, $a2  # 1
-skip: add $zero, $zero, $zero
+add $zero, $zero, $zero
 
 lw $t3, 8($a0)  # 257
 lw $t2, 4($a0)  # 15792
