@@ -4,9 +4,9 @@ mips-cpu - A MIPS CPU written in Verilog
 
 # DESCRIPTION
 
-An implementation of a MIPS CPU written in Verilog.
-This project is in very early stages and currently only
-implements the most basic functionality of a MIPS CPU.
+An implementation of a MIPS CPU written in Verilog.  This project is in
+very early stages and currently only implements the most basic
+functionality of a MIPS CPU.
 
  - 32-bit MIPS processor
 
@@ -23,13 +23,12 @@ implements the most basic functionality of a MIPS CPU.
  - can forward from memory (stage 4) and write back (stage 5)
    to avoid stalls
 
-Much of the design was inspired by the book
-"Computer Organization and Design" by David A. Patterson and
-John L. Hennessy (4th ed. 2008).
+Much of the design was inspired by the book "Computer Organization and
+Design" by David A. Patterson and John L. Hennessy (4th ed. 2008).
 
-This project also includes a full set of test benches.
-These are invaluable as a quick check to verify that new changes
-have not disrupted previously working functionality.
+This project also includes a full set of test benches.  These are
+invaluable as a quick check to verify that new changes have not
+disrupted previously working functionality.
 
 # REQUIREMENTS
 
@@ -40,19 +39,24 @@ This code has been tested under Debian Linux using the
 
 # RUNNING TEST BENCHES
 
-All the tests are placed in the `verilog/test/` directory and
-are run using make commands.
+All the tests are located in the `verilog/test/` directory and
+are run using make files.
 
 To run all the tests type `make test` from the `test/` director.
 
-    $ cd veriolog/test
+    $ cd verilog/test
     $ make test
 
-Or to run an individual test, `cd` to that specific directory
+Or, to run an individual test, `cd` to that specific directory
 and run `make test`.
 
     $ cd verilog/test/01-no_hazard/
     $ make test
+
+Each test works by generating an output file.  This file can then be
+checked by comparing the differences to a known good output file.
+Currently `diff` is used to do this, no differences indicate a
+successfule test.
 
 ## Test Bench Design
 
@@ -72,11 +76,11 @@ output.
 # AUTHOR
 
 Jeremiah Mahler <jmmahler@gmail.com><br>
-<https://plus.google.com/101159326398579740638/about>
+<http://github.com/jmahler>
 
 # COPYRIGHT
 
-Copyright &copy; 2013, Jeremiah Mahler.  All Rights Reserved.<br>
+Copyright &copy; 2014, Jeremiah Mahler.  All Rights Reserved.<br>
 This project is free software and released under
 the [GNU General Public License][gpl].
 
