@@ -3,8 +3,6 @@
  *
  * cpu - Five stage MIPS CPU.
  *
- * DEV NOTES
- *
  * Naming Convention
  *
  * Many variables (wires) pass through several stages.
@@ -20,7 +18,7 @@
  * be at the stage at which the variable is first
  * established.
  *
- * This file is best viewed in Vim with foldmethod=marker (zo, zc)
+ * This file is best viewed in Vim with foldmethod=marker
  */
 
 `include "reggy.v"
@@ -57,11 +55,6 @@ module cpu(
 
 	parameter NMEM = 20;  // number in instruction memory
 	parameter IM_DATA = "im_data.txt";
-
-	/*
-	 * Refer to the diagram of the 5 stage pipeline in order
-	 * to view what should be in each stage.
-	 */
 
  	// {{{ diagnostic outputs
 
