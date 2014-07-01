@@ -1,17 +1,21 @@
+
 /*
- * CPU Registers.
+ * regm - register memory
  *
- * 32 registers are provided.
- * The register at address $zero is treated special,
- * it ignores assignment and the value read is always zero.
+ * A 32-bit register memory.  Two registers can be read at once. The
+ * variables `read1` and `read2` specifiy which registers to read.  The
+ * output is placed in `data1` and `data2`.
  *
- * Any time the write signal (regwrite) is high the register
- * at the given address (wrreg) will be assigned the value
- * in 'wrdata'.
+ * If `regwrite` is high, the value in `wrdata` will be written to the
+ * register in `wrreg`.
  *
- * If the register being read is the same as that being
- * written, the value being written will be read immediately
- * (there is no one cycle delay).
+ * The register at address $zero is treated special, it ignores
+ * assignment and the value read is always zero.
+ *
+ * If the register being read is the same as that being written, the
+ * value being written will be available immediately without a one
+ * cycle delay.
+ *
  */
 
 `ifndef _regm
