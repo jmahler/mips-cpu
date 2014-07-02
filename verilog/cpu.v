@@ -1,9 +1,5 @@
 /*
- * NAME
- *
- * cpu - Five stage MIPS CPU.
- *
- * Naming Convention
+ * cpu. - five stage MIPS CPU.
  *
  * Many variables (wires) pass through several stages.
  * The naming convention used for each stage is
@@ -17,8 +13,6 @@
  * If the stage number is omitted it is assumed to
  * be at the stage at which the variable is first
  * established.
- *
- * This file is best viewed in Vim with foldmethod=marker
  */
 
 `include "reggy.v"
@@ -374,3 +368,5 @@ module cpu(
 	// }}}
 
 endmodule
+
+// vim:foldmethod=marker
