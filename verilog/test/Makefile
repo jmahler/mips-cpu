@@ -1,49 +1,29 @@
 
-OBJS = pc_tb dm_tb im_slow_tb im_cached_tb
+OBJS=$(shell ls t*.hex | sed -e 's/.hex//')
+OUTS=$(shell ls t*.hex | sed -e 's/.hex/.out/')
 
-all: $(OBJS)
+all: build output check
 
-%: %.v
-	iverilog -I../ -g2005 -o$@ $<
+build: $(OBJS)
 
-pc_tb.vcd: pc_tb
-	./$<
+output: build $(OUTS)
 
-dm_tb.vcd: dm_tb
-	./$<
+%: %.hex cpu_tb.v
+	iverilog -DIM_DATA_FILE="\"$<\"" \
+		-DNUM_IM_DATA=`wc -l $< | awk {'print $$1'}` \
+		-DDUMP_FILE="\"$@.vcd\"" \
+		-I../ -g2005 \
+		-o $@ \
+		cpu_tb.v
 
-im_slow_tb.vcd: im_slow_tb
-	./$<
+%.out: %
+	./$< > $<.out
 
-.FORCE:
-
-im_cached_tb: im_cached_tb.v .FORCE
-
-im_cached_tb.vcd: im_cached_tb .FORCE
-	./$<
-
-test:
-	cd 01-no_hazard; make test
-	cd 02-branch; make test
-	cd 02-operators; make test
-	cd 04-forward; make test
-	cd 04-stall; make test
-	cd 06-branch; make test
-	cd 06-lw_sw_forward; make test
-	cd 06-operators; make test
-	cd 07-lw_sw; make test
-	cd 08-lw_sw; make test
+check:
+	./check-diff.pl $(OUTS)
 
 clean:
 	-rm -f $(OBJS)
 	-rm -f *.vcd
-	cd 01-no_hazard; make clean
-	cd 02-branch; make clean
-	cd 02-operators; make clean
-	cd 04-forward; make clean
-	cd 04-stall; make clean
-	cd 06-branch; make clean
-	cd 06-lw_sw_forward; make clean
-	cd 06-operators; make clean
-	cd 07-lw_sw; make clean
-	cd 08-lw_sw; make clean
+	-rm -f *.out
+
