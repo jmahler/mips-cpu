@@ -1,5 +1,5 @@
 /*
- * Instruction Memory
+ * im.v - instruction memory
  *
  * Given a 32-bit address the data is latched and driven
  * on the rising edge of the clock.
@@ -16,7 +16,6 @@
  * The number of memory records can be specified using the
  * .NMEM parameter.  This should be the same as the number
  * of lines in the file (wc -l im_data.txt).
- *  
  */
 
 `ifndef _im
