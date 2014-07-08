@@ -39,39 +39,18 @@ This code has been tested under Debian Linux using the
 
 # RUNNING TEST BENCHES
 
-All the tests are located in the `verilog/test/` directory and
-are run using make files.
+The tests are located in the `verilog/test/` directory.  They are built
+and run with the `make` command.
 
-To run all the tests type `make test` from the `test/` director.
+    make
 
-    $ cd verilog/test
-    $ make test
-
-Or, to run an individual test, `cd` to that specific directory
-and run `make test`.
-
-    $ cd verilog/test/01-no_hazard/
-    $ make test
-
-Each test works by generating an output file.  This file can then be
-checked by comparing the differences to a known good output file.
-Currently `diff` is used to do this, no differences indicate a
-successfule test.
-
-## Test Bench Design
-
-The test benches are written in Verilog and the files are
-named with a `_tb` at the end.  When the test bench is run
-it uses $display statements to produce output which is saved
-to a file (.out).  This output can then be diffed against the
-.check file to see if it was correct.
-
-Note that since many variables are output a design change could
-create a difference which is not necessarily a failure.
-In cases such as these this is a sign that the result should
-be reviewed more closely (in a simulator) to verify that it
-is correct.  And then a new .check can be generated from the
-output.
+The tests work by using a generic CPU test bench (`cpu_tb.v`).  The
+specific test is built for the particular compiled assembly file (.hex).
+Then this executable can be run to produce the output results.  And a
+diff can be taken of the output (.out) compared to known good output
+(.check).  The `check-diff.pl` script is included which will check all
+the diffs and provide a summary of those that passed and failed.  All
+these steps are performed as part of the `make` command.
 
 # AUTHOR
 
