@@ -5,7 +5,7 @@ AS=mips-linux-gnu-as
 OBJS=$(shell ls t*.asm | sed -e 's/.asm//')
 OUTS=$(shell ls t*.asm | sed -e 's/.asm/.out/')
 
-all: $(OBJS) check
+all: $(OBJS) $(OUTS) check
 
 bin2hex: bin2hex.c
 	gcc -Wall $< -o $@
