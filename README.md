@@ -33,24 +33,34 @@ disrupted previously working functionality.
 # REQUIREMENTS
 
 This code has been tested under Debian Linux using the
-[Icarus Verilog][iverilog] compiler version 0.9.6.
+following software versions.
+
+  - [Icarus Verilog][iverilog] compiler version 0.9.6.
+
+  - [Gcc MIPS][gccmips] Gcc MIPS cross compiler version 2.24.90.20141023
 
   [iverilog]: http://iverilog.icarus.com
+  [gccmips]: http://packages.debian.org/sid/binutils-mipsel-linux-gnu
 
 # RUNNING TEST BENCHES
 
-The tests are located in the `verilog/test/` directory.  They are built
-and run with the `make` command.
+The tests are located in the `verilog/test/` directory.  Everything is
+built and run using the `make` command.
 
     make
 
-The tests work by using a generic CPU test bench (`cpu_tb.v`).  The
-specific test is built for the particular compiled assembly file (.hex).
-Then this executable can be run to produce the output results.  And a
-diff can be taken of the output (.out) compared to known good output
-(.check).  The `check-diff.pl` script is included which will check all
-the diffs and provide a summary of those that passed and failed.  All
-these steps are performed as part of the `make` command.
+There are two parts to each test: the Verilog code, and the assembly
+code.  The Verilog code uses a generic CPU test bench (`cpu_tb.v`) from
+which a specific test is built using a specific assembled .hex file.
+The .hex file is produced by assembling the .asm file using the Gcc MIPS
+cross compiler and converting it to ASCII hex suitable for use with
+Verilog.  Then the Verilog code, using a simulator such as
+[Icarus Verilog][iverilog], can be run to execute the assembly
+instructions and produce a dump of its output (.out).  Finally, the
+output file (.out) can be diffed against a known good output file
+(.check) to see if there are any differences.
+
+For more information about these steps refer the Makefile in `verilog/test/`.
 
 # AUTHOR
 
