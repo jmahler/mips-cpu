@@ -65,5 +65,3 @@ add $zero, $zero, $zero
 add $zero, $zero, $zero
 
 nor $t3, $t3, $t2  # 0xfff8482
-
-halt

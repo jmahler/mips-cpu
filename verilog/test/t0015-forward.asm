@@ -37,5 +37,3 @@ add $zero, $zero, $zero
 add $1, $2, $3  # 0x06, 6
 add $1, $1, $1  # 0x0c, 12
 add $4, $1, $1  # 0x18, 24
-
-halt

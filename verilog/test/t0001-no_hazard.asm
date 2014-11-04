@@ -23,5 +23,3 @@ lw $t4, 4($s0)				# ($t4 = 6)
 add $zero, $zero, $zero		# nop
 add $zero, $zero, $zero		# nop
 slt $t0, $t3, $t4			# (3 < 6 -> true)
-
-halt

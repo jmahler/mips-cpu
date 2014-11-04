@@ -27,5 +27,3 @@ skip1: add $zero, $zero, $zero
 
 # should still be 4
 add $a1, $a1, $zero
-
-halt
