@@ -3,3 +3,6 @@
 t*-*
 !t*-*.check
 !t*-*.asm
+*.text
+*.elf
+bin2hex

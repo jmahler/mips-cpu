@@ -1,13 +1,27 @@
 
-OBJS=$(shell ls t*.hex | sed -e 's/.hex//')
-OUTS=$(shell ls t*.hex | sed -e 's/.hex/.out/')
+OBJCOPY=mips-linux-gnu-objcopy
+AS=mips-linux-gnu-as
 
-all: build output check
+OBJS=$(shell ls t*.asm | sed -e 's/.asm//')
+OUTS=$(shell ls t*.asm | sed -e 's/.asm/.out/')
 
-build: $(OBJS)
+all: $(OBJS) check
 
-output: build $(OUTS)
+bin2hex: bin2hex.c
+	gcc -Wall $< -o $@
 
+# assemble for mips32 with no optimization
+%.elf: %.asm
+	$(AS) -O0 -mips32 -o $@ $<
+
+# extract just the .text section
+%.text: %.elf
+	$(OBJCOPY) -O binary --only-section=.text $< $@
+
+%.hex: %.text bin2hex
+	./bin2hex $< > $@
+
+# build the simulation executable
 %: %.hex cpu_tb.v
 	iverilog -DIM_DATA_FILE="\"$<\"" \
 		-DNUM_IM_DATA=`wc -l $< | awk {'print $$1'}` \
