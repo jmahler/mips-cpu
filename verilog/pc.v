@@ -25,7 +25,7 @@ module pc(
 		input				branch,
 		input		[31:0]	baddr);  // branch address (relative)
 
-	reg 		b1  = 1'b0;  // branch in stage 1
+	reg 	branch3 = 1'b0;
 	reg	[31:0]	pc0 = 32'd0;
 	reg	[31:0]	pc1 = 32'd0;
 	reg	[31:0]	pc2 = 32'd0;
@@ -33,30 +33,24 @@ module pc(
 
 	assign pc = pc0;
 
-	// stage 1
 	always @(posedge clk) begin
-		if (b1)
-			pc0 <= pc3;
+
+		if (branch3)
+			pc0 <= pc3;		// stage 3 said to branch
 		else
-			pc0 <= pc0 + 4;
+			pc0 <= pc0 + 4;	// normal increment
 
+		// propagate pc through stage 1 and 2
 		pc1 <= pc0;
-	end
-
-	// stage 2
-	always @(posedge clk) begin
 		pc2 <= pc1;
-	end
 
-	// stage 3
-	always @(posedge clk) begin
 		// default
-		pc3 <= 32'd0;	// don't care
-		b1 <= 1'b0;  	// don't branch
+		pc3		<= 32'd0;	// don't care
+		branch3 <= 1'b0;  	// don't branch
 
 		if (branch) begin
 			pc3 <= pc2 + baddr;
-			b1 <= 1'b1;  // branch on the next stage
+			branch3 <= 1'b1;  // branch on the next stage
 		end
 	end
 
