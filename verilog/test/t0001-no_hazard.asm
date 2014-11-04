@@ -7,7 +7,7 @@
 #
 
 # use $s0 for the address of data memory
-addi $s0, $zero, $zero
+addi $s0, $zero, 0
 
 addi $t1, $zero, 3			# $t0 = 3
 add $zero, $zero, $zero		# nop

@@ -27,6 +27,6 @@ add $zero, $zero, $zero
 add $zero, $zero, $zero
 
 # $2 should still be 3
-addi $2, $2, $zero
+addi $2, $2, 0
 
 halt
