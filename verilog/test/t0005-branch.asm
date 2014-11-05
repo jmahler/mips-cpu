@@ -1,6 +1,6 @@
 
 #
-# 02-branch
+# t0005-branch.asm
 #
 # Performs branches without creating data hazards
 # which would require stalls or forwards to handle.
