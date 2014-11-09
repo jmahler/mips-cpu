@@ -5,7 +5,7 @@ module alu(
 		input		[3:0]	ctl,
 		input		[31:0]	a, b,
 		output reg	[31:0]	out,
-		output				z);
+		output				zero);
 
 	wire [31:0] sub_ab;
 	wire [31:0] add_ab;
@@ -14,7 +14,7 @@ module alu(
 	wire 		oflow;
 	wire 		slt;
 
-	assign z = (0 == out);
+	assign zero = (0 == out);
 
 	assign sub_ab = a - b;
 	assign add_ab = a + b;
