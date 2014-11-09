@@ -159,7 +159,7 @@ module cpu(
 
 	// control (opcode -> ...)
 	wire		regdst;
-	wire		branch;
+	wire		branch_s2;
 	wire		memread;
 	wire		memwrite;
 	wire		memtoreg;
@@ -168,7 +168,7 @@ module cpu(
 	wire		alusrc;
 	//
 	control ctl1(.opcode(opcode), .regdst(regdst),
-				.branch(branch), .memread(memread),
+				.branch(branch_s2), .memread(memread),
 				.memtoreg(memtoreg), .aluop(aluop),
 				.memwrite(memwrite), .alusrc(alusrc),
 				.regwrite(regwrite));
@@ -176,7 +176,7 @@ module cpu(
 	// branch calculation
 	reg pcsrc;
 	always @(*) begin
-		if (branch == 1'b1 && (rs == rt))
+		if (branch_s2 == 1'b1 && (rs == rt))
 			pcsrc <= 1'b1; // take the branch
 		else
 			pcsrc <= 1'b0;
