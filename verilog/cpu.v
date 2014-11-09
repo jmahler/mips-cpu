@@ -241,7 +241,13 @@ module cpu(
 			2'd2: fw_data1_s3 = wrdata_s5;
 		 default: fw_data1_s3 = data1_s3;
 	endcase
-	alu alu1(.ctl(aluctl), .a(fw_data1_s3), .b(alusrc_data2), .out(alurslt));
+	wire zero_s3;
+	alu alu1(.ctl(aluctl), .a(fw_data1_s3), .b(alusrc_data2), .out(alurslt),
+									.zero(zero_s3));
+	wire zero_s4;
+	regr #(.N(1)) reg_zero_s3_s4(.clk(clk), .clear(1'b0), .hold(1'b0),
+					.in(zero_s3), .out(zero_s4));
+
 	// pass ALU result and zero to stage 4
 	wire [31:0]	alurslt_s4;
 	regr #(.N(32)) reg_alurslt(.clk(clk), .clear(1'b0), .hold(1'b0),
