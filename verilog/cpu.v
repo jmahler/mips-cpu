@@ -227,17 +227,16 @@ module cpu(
 						memwrite_s4}));
 
 	// ALU
-	// decode funct for ALU control
-	wire [5:0] funct;
-	assign funct = seimm_s3[5:0];
-	// select ALU data2 source
+	// second ALU input can come from an immediate value or data
 	wire [31:0] alusrc_data2;
 	assign alusrc_data2 = (alusrc_s3) ? seimm_s3 : fw_data2_s3;
 	// ALU control
 	wire [3:0] aluctl;
+	wire [5:0] funct;
+	assign funct = seimm_s3[5:0];
 	alu_control alu_ctl1(.funct(funct), .aluop(aluop_s3), .aluctl(aluctl));
 	// ALU
-	wire [31:0]	alurslt;  // ALU result
+	wire [31:0]	alurslt;
 	reg [31:0] fw_data1_s3;
 	always @(*)
 	case (forward_a)
@@ -245,8 +244,7 @@ module cpu(
 			2'd2: fw_data1_s3 = wrdata_s5;
 		 default: fw_data1_s3 = data1_s3;
 	endcase
-	alu alu1(.ctl(aluctl), .a(fw_data1_s3), .b(alusrc_data2),
-				.out(alurslt));
+	alu alu1(.ctl(aluctl), .a(fw_data1_s3), .b(alusrc_data2), .out(alurslt));
 	// pass ALU result and zero to stage 4
 	wire [31:0]	alurslt_s4;
 	reggy #(.N(32)) reg_alurslt(.clk(clk),
