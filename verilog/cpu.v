@@ -15,10 +15,7 @@
  * established.
  */
 
-`include "reggy.v"
-`include "sreggy.v"
-`include "zreggy.v"
-`include "szreggy.v"
+`include "regr.v"
 `include "im.v"
 `include "regm.v"
 `include "control.v"
@@ -92,8 +89,8 @@ module cpu(
 
 	// pass PC + 4 to stage 2
 	wire [31:0] pc4_s2;
-	szreggy #(.N(32)) reggy_pc4_s2(.clk(clk),
-						.stall(stall_s1_s2), .zero(branch_flush),
+	regr #(.N(32)) regr_pc4_s2(.clk(clk),
+						.hold(stall_s1_s2), .clear(branch_flush),
 						.in(pc4), .out(pc4_s2));
 
 	// instruction memory
@@ -101,8 +98,8 @@ module cpu(
 	wire [31:0] inst_s2;
 	im #(.NMEM(NMEM), .IM_DATA(IM_DATA))
 		im1(.clk(clk), .addr(pc), .data(inst));
-	szreggy #(.N(32)) reggy_im_s2(.clk(clk),
-						.stall(stall_s1_s2), .zero(branch_flush),
+	regr #(.N(32)) regr_im_s2(.clk(clk),
+						.hold(stall_s1_s2), .clear(branch_flush),
 						.in(inst), .out(inst_s2));
 
 	// }}}
@@ -137,12 +134,12 @@ module cpu(
 
 	// pass rs to stage 3 (for forwarding)
 	wire [4:0] rs_s3;
-	sreggy #(.N(5)) reggy_s2_rs(.clk(clk), .stall(stall_s1_s2),
+	regr #(.N(5)) regr_s2_rs(.clk(clk), .hold(stall_s1_s2), .clear(1'b0),
 				.in(rs), .out(rs_s3));
 
 	// transfer register data to stage 3
 	wire [31:0]	data1_s3, data2_s3;
-	sreggy #(.N(64)) reg_s2_mem(.clk(clk), .stall(stall_s1_s2),
+	regr #(.N(64)) reg_s2_mem(.clk(clk), .hold(stall_s1_s2), .clear(1'b0),
 				.in({data1, data2}),
 				.out({data1_s3, data2_s3}));
 
@@ -150,14 +147,14 @@ module cpu(
 	wire [31:0] seimm_s3;
 	wire [4:0] 	rt_s3;
 	wire [4:0] 	rd_s3;
-	sreggy #(.N(32)) reg_s2_seimm(.clk(clk), .stall(stall_s1_s2),
+	regr #(.N(32)) reg_s2_seimm(.clk(clk), .hold(stall_s1_s2), .clear(1'b0),
 						.in(seimm), .out(seimm_s3));
-	sreggy #(.N(10)) reg_s2_rt_rd(.clk(clk), .stall(stall_s1_s2),
+	regr #(.N(10)) reg_s2_rt_rd(.clk(clk), .hold(stall_s1_s2), .clear(1'b0),
 						.in({rt, rd}), .out({rt_s3, rd_s3}));
 
 	// transfer PC + 4 to stage 3
 	wire [31:0] pc4_s3;
-	sreggy #(.N(32)) reg_pc4_s2(.clk(clk), .stall(stall_s1_s2),
+	regr #(.N(32)) reg_pc4_s2(.clk(clk), .hold(stall_s1_s2), .clear(1'b0),
 						.in(pc4_s2), .out(pc4_s3));
 
 	// control (opcode -> ...)
@@ -206,7 +203,7 @@ module cpu(
 	wire		alusrc_s3;
 	// A bubble is inserted by setting all the control signals
 	// to zero (stall_s1_s2).
-	zreggy #(.N(8)) reg_s2_control(.clk(clk), .zero(stall_s1_s2),
+	regr #(.N(8)) reg_s2_control(.clk(clk), .clear(stall_s1_s2), .hold(1'b0),
 			.in({regdst, memread, memwrite,
 					memtoreg, aluop, regwrite, alusrc}),
 			.out({regdst_s3, memread_s3, memwrite_s3,
@@ -220,7 +217,7 @@ module cpu(
 	wire memtoreg_s4;
 	wire memread_s4;
 	wire memwrite_s4;
-	reggy #(.N(4)) reg_s3(.clk(clk),
+	regr #(.N(4)) reg_s3(.clk(clk), .clear(1'b0), .hold(1'b0),
 				.in({regwrite_s3, memtoreg_s3, memread_s3,
 						memwrite_s3}),
 				.out({regwrite_s4, memtoreg_s4, memread_s4,
@@ -247,7 +244,7 @@ module cpu(
 	alu alu1(.ctl(aluctl), .a(fw_data1_s3), .b(alusrc_data2), .out(alurslt));
 	// pass ALU result and zero to stage 4
 	wire [31:0]	alurslt_s4;
-	reggy #(.N(32)) reg_alurslt(.clk(clk),
+	regr #(.N(32)) reg_alurslt(.clk(clk), .clear(1'b0), .hold(1'b0),
 				.in({alurslt}),
 				.out({alurslt_s4}));
 
@@ -260,14 +257,16 @@ module cpu(
 			2'd2: fw_data2_s3 = wrdata_s5;
 		 default: fw_data2_s3 = data2_s3;
 	endcase
-	reggy #(.N(32)) reg_data2_s3(.clk(clk), .in(fw_data2_s3), .out(data2_s4));
+	regr #(.N(32)) reg_data2_s3(.clk(clk), .clear(1'b0), .hold(1'b0),
+				.in(fw_data2_s3), .out(data2_s4));
 
 	// write register
 	wire [4:0]	wrreg;
 	wire [4:0]	wrreg_s4;
 	assign wrreg = (regdst_s3) ? rd_s3 : rt_s3;
 	// pass to stage 4
-	reggy #(.N(5)) reg_wrreg(.clk(clk), .in(wrreg), .out(wrreg_s4));
+	regr #(.N(5)) reg_wrreg(.clk(clk), .clear(1'b0), .hold(1'b0),
+				.in(wrreg), .out(wrreg_s4));
 
 	// }}}
 
@@ -276,7 +275,7 @@ module cpu(
 	// pass regwrite and memtoreg to stage 5
 	wire regwrite_s5;
 	wire memtoreg_s5;
-	reggy #(.N(2)) reg_regwrite_s4(.clk(clk),
+	regr #(.N(2)) reg_regwrite_s4(.clk(clk), .clear(1'b0), .hold(1'b0),
 				.in({regwrite_s4, memtoreg_s4}),
 				.out({regwrite_s5, memtoreg_s5}));
 
@@ -286,19 +285,19 @@ module cpu(
 			.wdata(data2_s4), .rdata(rdata));
 	// pass read data to stage 5
 	wire [31:0] rdata_s5;
-	reggy #(.N(32)) reg_rdata_s4(.clk(clk),
+	regr #(.N(32)) reg_rdata_s4(.clk(clk), .clear(1'b0), .hold(1'b0),
 				.in(rdata),
 				.out(rdata_s5));
 
 	// pass alurslt to stage 5
 	wire [31:0] alurslt_s5;
-	reggy #(.N(32)) reg_alurslt_s4(.clk(clk),
+	regr #(.N(32)) reg_alurslt_s4(.clk(clk), .clear(1'b0), .hold(1'b0),
 				.in(alurslt_s4),
 				.out(alurslt_s5));
 
 	// pass wrreg to stage 5
 	wire [4:0] wrreg_s5;
-	reggy #(.N(5)) reg_wrreg_s4(.clk(clk),
+	regr #(.N(5)) reg_wrreg_s4(.clk(clk), .clear(1'b0), .hold(1'b0),
 				.in(wrreg_s4),
 				.out(wrreg_s5));
 	// }}}
