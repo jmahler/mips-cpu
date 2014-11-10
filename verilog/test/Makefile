@@ -4,8 +4,9 @@ AS=mips-linux-gnu-as
 
 OBJS=$(shell ls t*.asm | sed -e 's/.asm//')
 OUTS=$(shell ls t*.asm | sed -e 's/.asm/.out/')
+HEXS=$(shell ls t*.asm | sed -e 's/.asm/.hex/')
 
-all: $(OBJS) $(OUTS) check
+all: $(OBJS) $(OUTS) $(HEXS) check
 
 bin2hex: bin2hex.c
 	gcc -Wall $< -o $@
@@ -40,4 +41,5 @@ clean:
 	-rm -f $(OBJS)
 	-rm -f *.vcd
 	-rm -f *.out
+	-rm -f t*.hex
 
