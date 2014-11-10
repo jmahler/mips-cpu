@@ -8,13 +8,13 @@ add $zero, $zero, $zero
 
 # init
 
-addi $1, $zero, 3
+addi $8, $zero, 3
 addi $2, $zero, 12
 addi $3, $zero, 37 # 0x25
 
 addi $4, $zero, 3  # used for memory offset
 
-sw $1, 16($zero)
+sw $8, 16($zero)
 sw $2, 20($zero)
 sw $3, 24($zero)
 

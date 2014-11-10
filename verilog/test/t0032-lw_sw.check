@@ -1,11 +1,11 @@
 VCD info: dumpfile t0032-lw_sw.vcd opened for output.
 if_pc,    if_instr, id_regrs, id_regrt, ex_alua,  ex_alub,  ex_aluctl, mem_memdata, mem_memread, mem_memwrite, wb_regdata, wb_regwrite
 00000000, 00000020, xxxxxxxx, xxxxxxxx, xxxxxxxx, xxxxxxxx, 0,         xxxxxxxx,    x,           x,            xxxxxxxx,   x
-00000004, 20010003, 00000000, 00000000, xxxxxxxx, xxxxxxxx, 0,         xxxxxxxx,    x,           x,            xxxxxxxx,   x
+00000004, 20080003, 00000000, 00000000, xxxxxxxx, xxxxxxxx, 0,         xxxxxxxx,    x,           x,            xxxxxxxx,   x
 00000008, 2002000c, 00000000, xxxxxxxx, 00000000, 00000000, 2,         xxxxxxxx,    x,           x,            xxxxxxxx,   x
 0000000c, 20030025, 00000000, xxxxxxxx, 00000000, 00000003, 2,         00000000,    0,           0,            xxxxxxxx,   x
 00000010, 20040003, 00000000, xxxxxxxx, 00000000, 0000000c, 2,         xxxxxxxx,    0,           0,            00000000,   1
-00000014, ac010010, 00000000, xxxxxxxx, 00000000, 00000025, 2,         xxxxxxxx,    0,           0,            00000003,   1
+00000014, ac080010, 00000000, xxxxxxxx, 00000000, 00000025, 2,         xxxxxxxx,    0,           0,            00000003,   1
 00000018, ac020014, 00000000, 00000003, 00000000, 00000003, 2,         xxxxxxxx,    0,           0,            0000000c,   1
 0000001c, ac030018, 00000000, 0000000c, 00000000, 00000010, 2,         xxxxxxxx,    0,           0,            00000025,   1
 00000020, 8c050010, 00000000, 00000025, 00000000, 00000014, 2,         00000003,    0,           1,            00000003,   1

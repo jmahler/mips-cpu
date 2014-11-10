@@ -1,5 +1,5 @@
 
-addi $1, $zero, 1
+addi $5, $zero, 1
 addi $2, $zero, 3
 
 add $zero, $zero, $zero
@@ -20,7 +20,7 @@ add $zero, $zero, $zero
 add $zero, $zero, $zero
 add $zero, $zero, $zero
 
-skip: add $zero, $1, $1
+skip: add $zero, $5, $5
 
 add $zero, $zero, $zero
 add $zero, $zero, $zero

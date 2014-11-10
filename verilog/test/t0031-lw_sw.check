@@ -1,10 +1,10 @@
 VCD info: dumpfile t0031-lw_sw.vcd opened for output.
 if_pc,    if_instr, id_regrs, id_regrt, ex_alua,  ex_alub,  ex_aluctl, mem_memdata, mem_memread, mem_memwrite, wb_regdata, wb_regwrite
 00000000, 00000020, xxxxxxxx, xxxxxxxx, xxxxxxxx, xxxxxxxx, 0,         xxxxxxxx,    x,           x,            xxxxxxxx,   x
-00000004, 20010001, 00000000, 00000000, xxxxxxxx, xxxxxxxx, 0,         xxxxxxxx,    x,           x,            xxxxxxxx,   x
+00000004, 200c0001, 00000000, 00000000, xxxxxxxx, xxxxxxxx, 0,         xxxxxxxx,    x,           x,            xxxxxxxx,   x
 00000008, 20020005, 00000000, xxxxxxxx, 00000000, 00000000, 2,         xxxxxxxx,    x,           x,            xxxxxxxx,   x
 0000000c, 20030004, 00000000, xxxxxxxx, 00000000, 00000001, 2,         00000000,    0,           0,            xxxxxxxx,   x
-00000010, ac010000, 00000000, xxxxxxxx, 00000000, 00000005, 2,         xxxxxxxx,    0,           0,            00000000,   1
+00000010, ac0c0000, 00000000, xxxxxxxx, 00000000, 00000005, 2,         xxxxxxxx,    0,           0,            00000000,   1
 00000014, ac020004, 00000000, 00000001, 00000000, 00000004, 2,         xxxxxxxx,    0,           0,            00000001,   1
 00000018, ac030008, 00000000, 00000005, 00000000, 00000000, 2,         xxxxxxxx,    0,           0,            00000005,   1
 0000001c, 00000020, 00000000, 00000004, 00000000, 00000004, 2,         00000001,    0,           1,            00000004,   1
