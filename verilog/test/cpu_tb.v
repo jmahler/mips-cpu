@@ -1,6 +1,9 @@
-
 /*
+ * NAME
+ *
  * cpu_tb.v - generic cpu test bench
+ *
+ * DESCRIPTION
  *
  * This generic cpu test bench can be used to run a program, which is in
  * ASCII hex format, and output the results.
@@ -77,7 +80,7 @@ module cpu_tb;
 					mem_memdata, mem_memread, mem_memwrite,
 					wb_regdata, wb_regwrite);
 
-		// Run all the lines, plus 5 extra to finish it off the pipeline.
+		// Run all the lines, plus 5 extra to finish off the pipeline.
 		for (i = 0; i < `NUM_IM_DATA + 5; i = i + 1) begin
 			@(posedge clk);
 		end
