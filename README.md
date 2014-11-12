@@ -32,15 +32,19 @@ disrupted previously working functionality.
 
 # REQUIREMENTS
 
-This code has been tested under Debian Linux using the
-following software versions.
+This project requires a Verilog simulator, such as [Icarus][iverilog],
+the Gcc compiler, and a Gcc MIPS cross compiler.  To check if your
+system has the required programs installed run the `check-install.sh`
+script.
 
-  - [Icarus Verilog][iverilog] compiler version 0.9.6.
-
-  - [Gcc MIPS][gccmips] Gcc MIPS cross compiler version 2.24.90.20141023
+    $ ./check-install.sh
+    Checking for required programs...
+      mips-linux-gnu-objcopy
+      mips-linux-gnu-as
+      iverilog
+    Please install the missing programs and retry.
 
   [iverilog]: http://iverilog.icarus.com
-  [gccmips]: http://packages.debian.org/sid/binutils-mipsel-linux-gnu
 
 # RUNNING TEST BENCHES
 
