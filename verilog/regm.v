@@ -1,4 +1,3 @@
-
 /*
  * regm - register memory
  *
@@ -28,7 +27,6 @@ module regm(
 		input wire			regwrite,
 		input wire	[4:0]	wrreg,
 		input wire	[31:0]	wrdata);
-
 
 	reg [31:0] mem [0:31];  // 32-bit memory with 32 entries
 
