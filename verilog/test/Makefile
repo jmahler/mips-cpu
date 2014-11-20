@@ -27,6 +27,7 @@ bin2hex: bin2hex.c
 	iverilog -DIM_DATA_FILE="\"$<\"" \
 		-DNUM_IM_DATA=`wc -l $< | awk {'print $$1'}` \
 		-DDUMP_FILE="\"$@.vcd\"" \
+		-DDEBUG_CPU_STAGES="1" \
 		-I../ -g2005 \
 		-o $@ \
 		cpu_tb.v

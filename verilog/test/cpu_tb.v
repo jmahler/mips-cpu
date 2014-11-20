@@ -25,7 +25,6 @@
  *   ./t0001-no_hazard > t0001-no_hazard.out
  */
 
-`define DEBUG_CPU_STAGES 1
 `include "cpu.v"
 
 module cpu_tb;
