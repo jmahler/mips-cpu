@@ -20,6 +20,10 @@
 `ifndef _regm
 `define _regm
 
+`ifndef DEBUG_CPU_REG
+`define DEBUG_CPU_REG 0
+`endif
+
 module regm(
 		input wire			clk,
 		input wire  [4:0]	read1, read2,
@@ -31,6 +35,24 @@ module regm(
 	reg [31:0] mem [0:31];  // 32-bit memory with 32 entries
 
 	reg [31:0] _data1, _data2;
+
+	initial begin
+		if (`DEBUG_CPU_REG) begin
+			$display("     $v0,      $v1,      $t0,      $t1,      $t2,      $t3,      $t4,      $t5,      $t6,      $t7");
+			$monitor("%x, %x, %x, %x, %x, %x, %x, %x, %x, %x",
+					mem[2][31:0],	/* $v0 */
+					mem[3][31:0],	/* $v1 */
+					mem[8][31:0],	/* $t0 */
+					mem[9][31:0],	/* $t1 */
+					mem[10][31:0],	/* $t2 */
+					mem[11][31:0],	/* $t3 */
+					mem[12][31:0],	/* $t4 */
+					mem[13][31:0],	/* $t5 */
+					mem[14][31:0],	/* $t6 */
+					mem[15][31:0],	/* $t7 */
+				);
+		end
+	end
 
 	always @(*) begin
 		if (read1 == 5'd0)
