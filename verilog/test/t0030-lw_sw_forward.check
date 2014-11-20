@@ -1,5 +1,5 @@
-VCD info: dumpfile t0030-lw_sw_forward.vcd opened for output.
 if_pc,    if_instr, id_regrs, id_regrt, ex_alua,  ex_alub,  ex_aluctl, mem_memdata, mem_memread, mem_memwrite, wb_regdata, wb_regwrite
+VCD info: dumpfile t0030-lw_sw_forward.vcd opened for output.
 00000000, 00000020, xxxxxxxx, xxxxxxxx, xxxxxxxx, xxxxxxxx, 0,         xxxxxxxx,    x,           x,            xxxxxxxx,   x
 00000004, 20080001, 00000000, 00000000, xxxxxxxx, xxxxxxxx, 0,         xxxxxxxx,    x,           x,            xxxxxxxx,   x
 00000008, 20020005, 00000000, xxxxxxxx, 00000000, 00000000, 2,         xxxxxxxx,    x,           x,            xxxxxxxx,   x

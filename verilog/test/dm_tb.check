@@ -1,5 +1,5 @@
-VCD info: dumpfile dm_tb.vcd opened for output.
 addr,  rd, wr, rdata,    wdata
+VCD info: dumpfile dm_tb.vcd opened for output.
 00,    0,  0,  xxxxxxxx, xxxxxxxx
 00,    0,  1,  abcdef01, abcdef01
 01,    0,  1,  ffffaaaa, ffffaaaa

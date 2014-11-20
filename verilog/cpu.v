@@ -23,49 +23,36 @@
 `include "alu_control.v"
 `include "dm.v"
 
+`ifndef DEBUG_CPU_STAGES
+`define DEBUG_CPU_STAGES 0
+`endif
+
 module cpu(
-		input wire clk,
-
-		// diagnostic outputs
-		output wire [31:0]	if_pc,		// program counter (PC)
-		output wire [31:0]	if_instr,	// instruction read from memory (IM)
-
-		output wire [31:0]	id_regrs,
-		output wire [31:0]	id_regrt,
-
-		output wire [31:0]	ex_alua,
-		output wire [31:0]	ex_alub,
-		output wire [3:0]	ex_aluctl,
-
-		output wire [31:0]	mem_memdata,
-		output wire			mem_memread,
-		output wire			mem_memwrite,
-
-		output wire [31:0]	wb_regdata,
-		output wire 		wb_regwrite);
+		input wire clk);
 
 	parameter NMEM = 20;  // number in instruction memory
 	parameter IM_DATA = "im_data.txt";
 
- 	// {{{ diagnostic outputs
-
-	assign if_pc	= pc;
-	assign if_instr = inst;
-
-	assign id_regrs = data1;  // value read from $rs
-	assign id_regrt = data2;  // value read from $rt
-
-	assign ex_alua = data1_s3;
-	assign ex_alub = alusrc_data2;
-	assign ex_aluctl = aluctl;
-
-	assign mem_memdata = data2_s4;
-	assign mem_memread = memread_s4;
-	assign mem_memwrite = memwrite_s4;
-
-	assign wb_regdata = wrdata_s5;
-	assign wb_regwrite = regwrite_s5;
-
+	// {{{ diagnostic outputs
+	initial begin
+		if (`DEBUG_CPU_STAGES) begin
+			$display("if_pc,    if_instr, id_regrs, id_regrt, ex_alua,  ex_alub,  ex_aluctl, mem_memdata, mem_memread, mem_memwrite, wb_regdata, wb_regwrite");
+			$monitor("%x, %x, %x, %x, %x, %x, %x,         %x,    %x,           %x,            %x,   %x",
+					pc,				/* if_pc */
+					inst,			/* if_instr */
+					data1,			/* id_regrs */
+					data2,			/* id_regrt */
+					data1_s3,		/* data1_s3 */
+					alusrc_data2,	/* alusrc_data2 */
+					aluctl,			/* ex_aluctl */
+					data2_s4,		/* mem_memdata */
+					memread_s4,		/* mem_memread */
+					memwrite_s4,	/* mem_memwrite */
+					wrdata_s5,		/* wb_regdata */
+					regwrite_s5		/* wb_regwrite */
+				);
+		end
+	end
 	// }}}
 
 	// {{{ stage 1, IF (fetch)

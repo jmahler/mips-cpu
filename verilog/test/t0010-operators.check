@@ -1,5 +1,5 @@
-VCD info: dumpfile t0010-operators.vcd opened for output.
 if_pc,    if_instr, id_regrs, id_regrt, ex_alua,  ex_alub,  ex_aluctl, mem_memdata, mem_memread, mem_memwrite, wb_regdata, wb_regwrite
+VCD info: dumpfile t0010-operators.vcd opened for output.
 00000000, 200b0001, xxxxxxxx, xxxxxxxx, xxxxxxxx, xxxxxxxx, 0,         xxxxxxxx,    x,           x,            xxxxxxxx,   x
 00000004, 20020003, 00000000, xxxxxxxx, xxxxxxxx, xxxxxxxx, 0,         xxxxxxxx,    x,           x,            xxxxxxxx,   x
 00000008, 20030005, 00000000, xxxxxxxx, 00000000, 00000001, 2,         xxxxxxxx,    x,           x,            xxxxxxxx,   x

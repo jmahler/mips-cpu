@@ -1,5 +1,5 @@
-VCD info: dumpfile t0006-beq.vcd opened for output.
 if_pc,    if_instr, id_regrs, id_regrt, ex_alua,  ex_alub,  ex_aluctl, mem_memdata, mem_memread, mem_memwrite, wb_regdata, wb_regwrite
+VCD info: dumpfile t0006-beq.vcd opened for output.
 00000000, 20050004, xxxxxxxx, xxxxxxxx, xxxxxxxx, xxxxxxxx, 0,         xxxxxxxx,    x,           x,            xxxxxxxx,   x
 00000004, 20060004, 00000000, xxxxxxxx, xxxxxxxx, xxxxxxxx, 0,         xxxxxxxx,    x,           x,            xxxxxxxx,   x
 00000008, 00000020, 00000000, xxxxxxxx, 00000000, 00000004, 2,         xxxxxxxx,    x,           x,            xxxxxxxx,   x
