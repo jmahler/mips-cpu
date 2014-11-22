@@ -146,7 +146,7 @@ module cpu(
 
 	// control (opcode -> ...)
 	wire		regdst;
-	wire		branch_s2;
+	wire [1:0]	branch_s2;
 	wire		memread;
 	wire		memwrite;
 	wire		memtoreg;
@@ -183,8 +183,8 @@ module cpu(
 			.out({regdst_s3, memread_s3, memwrite_s3,
 					memtoreg_s3, aluop_s3, regwrite_s3, alusrc_s3}));
 
-	wire branch_s3;
-	regr #(.N(1)) branch_s2_s3(.clk(clk), .clear(branch_flush), .hold(1'b0),
+	wire [1:0] branch_s3;
+	regr #(.N(2)) branch_s2_s3(.clk(clk), .clear(branch_flush), .hold(1'b0),
 				.in(branch_s2), .out(branch_s3));
 
 	wire [31:0] baddr_s3;
@@ -256,8 +256,8 @@ module cpu(
 	regr #(.N(5)) reg_wrreg(.clk(clk), .clear(branch_flush), .hold(1'b0),
 				.in(wrreg), .out(wrreg_s4));
 
-	wire branch_s4;
-	regr #(.N(1)) branch_s3_s4(.clk(clk), .clear(branch_flush), .hold(1'b0),
+	wire [1:0] branch_s4;
+	regr #(.N(2)) branch_s3_s4(.clk(clk), .clear(branch_flush), .hold(1'b0),
 				.in(branch_s3), .out(branch_s4));
 
 	wire [31:0] baddr_s4;
@@ -299,7 +299,11 @@ module cpu(
 	// branch
 	reg pcsrc;
 	always @(*) begin
-		pcsrc <= (zero_s4 && branch_s4);
+		case (1'b1)
+			branch_s4[`BRANCH_BEQ]: pcsrc <= zero_s4;
+			branch_s4[`BRANCH_BNE]: pcsrc <= ~(zero_s4);
+			default: pcsrc <= 1'b0;
+		endcase
 	end
 	wire branch_flush;
 	assign branch_flush = pcsrc;
