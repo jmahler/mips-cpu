@@ -11,7 +11,7 @@ module control(
 		output wire [1:0]	aluop,
 		output wire			memwrite, alusrc, regwrite);
 
-	wire 		and1, and2, and3, and4, and5;
+	wire 		and1, and2, and3, and4, and5, and6;
 	wire [5:0] 	oc;
 
 	assign oc = opcode;
