@@ -1,17 +1,28 @@
 
 OBJCOPY=mips-linux-gnu-objcopy
 AS=mips-linux-gnu-as
+GCC=mips-linux-gnu-gcc
 
-OBJS=$(shell ls t*.asm | sed -e 's/.asm//')
-OUTS=$(shell ls t*.asm | sed -e 's/.asm/.out/')
-HEXS=$(shell ls t*.asm | sed -e 's/.asm/.hex/')
+OBJS  = $(shell ls t*.asm | sed -e 's/.asm//')
+OBJS += $(shell ls t*.c | sed -e 's/.c//')
 
-all: $(OBJS) $(OUTS) $(HEXS) check
+OUTS  = $(shell ls t*.asm | sed -e 's/.asm/.out/')
+#OUTS  = $(shell ls t*.c | sed -e 's/.c/.out/')
+
+HEXS  = $(shell ls t*.asm | sed -e 's/.asm/.hex/')
+HEXS += $(shell ls t*.c | sed -e 's/.c/.hex/')
+
+all: $(OBJS) $(ELFS) $(OUTS) $(HEXS) check
 
 bin2hex: bin2hex.c
 	gcc -Wall $< -o $@
 
-# assemble for mips32 with no optimization
+# cancel implicit rule for .c -> (exe)
+%: %.c
+
+%.elf: %.c
+	$(GCC) -O0 -mips32 -nostdlib -ffreestanding -o $@ $<
+
 %.elf: %.asm
 	$(AS) -O0 -mips32 -o $@ $<
 
@@ -55,4 +66,5 @@ clean:
 	-rm -f *.vcd
 	-rm -f *.out
 	-rm -f t*.hex
+	-rm -f *.elf
 

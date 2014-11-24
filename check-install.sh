@@ -36,6 +36,13 @@ if ! which "mips-linux-gnu-as" >/dev/null ; then
 	error=1
 fi
 
+if ! which "mips-linux-gnu-gcc" >/dev/null ; then
+	echo "  gcc-mips-linux-gnu"
+	echo "    dpkg --add-architecture mips"
+	echo "    apt-get install gcc-mips-linux-gnu"
+	error=1
+fi
+
 if ! which "iverilog" >/dev/null ; then
 	echo "  iverilog"
 	error=1
