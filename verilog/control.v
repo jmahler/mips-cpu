@@ -11,7 +11,7 @@ module control(
 		output wire [1:0]	aluop,
 		output wire			memwrite, alusrc, regwrite);
 
-	wire 		and1, and2, and3, and4, and5, and6;
+	wire 		and1, and2, and3, and5, and6;
 	wire [5:0] 	oc;
 
 	assign oc = opcode;
@@ -19,7 +19,6 @@ module control(
 	assign and1 = ( oc[0] &  oc[1] & ~oc[2] & ~oc[3] & ~oc[4] &  oc[5]);
 	assign and2 = (~oc[0] & ~oc[1] & ~oc[2] &  oc[3] & ~oc[4] & ~oc[5]);
 	assign and3 = (~oc[0] & ~oc[1] &  oc[2] & ~oc[3] & ~oc[4] & ~oc[5]); // beq
-	assign and4 = ( oc[0] &  oc[1] & ~oc[2] & ~oc[3] & ~oc[4] &  oc[5]);
 	assign and5 = ( oc[0] &  oc[1] & ~oc[2] &  oc[3] & ~oc[4] &  oc[5]);
 	assign and6 = ( oc[0] & ~oc[1] &  oc[2] & ~oc[3] & ~oc[4] & ~oc[5]); // bne
 
@@ -28,9 +27,9 @@ module control(
 	assign branch[`BRANCH_BEQ] = and3;
 	assign branch[`BRANCH_BNE] = and6;
 
-	assign memread = and4;
+	assign memread = and1;
 
-	assign memtoreg = and4;
+	assign memtoreg = and1;
 
 	assign aluop[0] = and3 | and6;
 	assign aluop[1] = ~(and1 | and2 | and3 | and5 | and6);
