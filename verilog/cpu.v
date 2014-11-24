@@ -55,6 +55,20 @@ module cpu(
 	end
 	// }}}
 
+	// {{{ flush control
+	reg flush_s1, flush_s2, flush_s3;
+	always @(*) begin
+		flush_s1 <= 1'b0;
+		flush_s2 <= 1'b0;
+		flush_s3 <= 1'b0;
+		if (pcsrc) begin
+			flush_s1 <= 1'b1;
+			flush_s2 <= 1'b1;
+			flush_s3 <= 1'b1;
+		end
+	end
+	// }}}
+
 	// {{{ stage 1, IF (fetch)
 
 	reg  [31:0] pc;
@@ -77,7 +91,7 @@ module cpu(
 	// pass PC + 4 to stage 2
 	wire [31:0] pc4_s2;
 	regr #(.N(32)) regr_pc4_s2(.clk(clk),
-						.hold(stall_s1_s2), .clear(branch_flush),
+						.hold(stall_s1_s2), .clear(flush_s1),
 						.in(pc4), .out(pc4_s2));
 
 	// instruction memory
@@ -86,7 +100,7 @@ module cpu(
 	im #(.NMEM(NMEM), .IM_DATA(IM_DATA))
 		im1(.clk(clk), .addr(pc), .data(inst));
 	regr #(.N(32)) regr_im_s2(.clk(clk),
-						.hold(stall_s1_s2), .clear(branch_flush),
+						.hold(stall_s1_s2), .clear(flush_s1),
 						.in(inst), .out(inst_s2));
 
 	// }}}
@@ -126,7 +140,7 @@ module cpu(
 
 	// transfer register data to stage 3
 	wire [31:0]	data1_s3, data2_s3;
-	regr #(.N(64)) reg_s2_mem(.clk(clk), .clear(branch_flush), .hold(stall_s1_s2),
+	regr #(.N(64)) reg_s2_mem(.clk(clk), .clear(flush_s2), .hold(stall_s1_s2),
 				.in({data1, data2}),
 				.out({data1_s3, data2_s3}));
 
@@ -134,9 +148,9 @@ module cpu(
 	wire [31:0] seimm_s3;
 	wire [4:0] 	rt_s3;
 	wire [4:0] 	rd_s3;
-	regr #(.N(32)) reg_s2_seimm(.clk(clk), .clear(branch_flush), .hold(stall_s1_s2),
+	regr #(.N(32)) reg_s2_seimm(.clk(clk), .clear(flush_s2), .hold(stall_s1_s2),
 						.in(seimm), .out(seimm_s3));
-	regr #(.N(10)) reg_s2_rt_rd(.clk(clk), .clear(branch_flush), .hold(stall_s1_s2),
+	regr #(.N(10)) reg_s2_rt_rd(.clk(clk), .clear(flush_s2), .hold(stall_s1_s2),
 						.in({rt, rd}), .out({rt_s3, rd_s3}));
 
 	// transfer PC + 4 to stage 3
@@ -184,11 +198,11 @@ module cpu(
 					memtoreg_s3, aluop_s3, regwrite_s3, alusrc_s3}));
 
 	wire [1:0] branch_s3;
-	regr #(.N(2)) branch_s2_s3(.clk(clk), .clear(branch_flush), .hold(1'b0),
+	regr #(.N(2)) branch_s2_s3(.clk(clk), .clear(flush_s2), .hold(1'b0),
 				.in(branch_s2), .out(branch_s3));
 
 	wire [31:0] baddr_s3;
-	regr #(.N(32)) baddr_s2_s3(.clk(clk), .clear(branch_flush), .hold(1'b0),
+	regr #(.N(32)) baddr_s2_s3(.clk(clk), .clear(flush_s2), .hold(1'b0),
 				.in(baddr_s2), .out(baddr_s3));
 	// }}}
 
@@ -199,7 +213,7 @@ module cpu(
 	wire memtoreg_s4;
 	wire memread_s4;
 	wire memwrite_s4;
-	regr #(.N(4)) reg_s3(.clk(clk), .clear(branch_flush), .hold(1'b0),
+	regr #(.N(4)) reg_s3(.clk(clk), .clear(flush_s2), .hold(1'b0),
 				.in({regwrite_s3, memtoreg_s3, memread_s3,
 						memwrite_s3}),
 				.out({regwrite_s4, memtoreg_s4, memread_s4,
@@ -232,7 +246,7 @@ module cpu(
 
 	// pass ALU result and zero to stage 4
 	wire [31:0]	alurslt_s4;
-	regr #(.N(32)) reg_alurslt(.clk(clk), .clear(branch_flush), .hold(1'b0),
+	regr #(.N(32)) reg_alurslt(.clk(clk), .clear(flush_s3), .hold(1'b0),
 				.in({alurslt}),
 				.out({alurslt_s4}));
 
@@ -245,7 +259,7 @@ module cpu(
 			2'd2: fw_data2_s3 = wrdata_s5;
 		 default: fw_data2_s3 = data2_s3;
 	endcase
-	regr #(.N(32)) reg_data2_s3(.clk(clk), .clear(branch_flush), .hold(1'b0),
+	regr #(.N(32)) reg_data2_s3(.clk(clk), .clear(flush_s3), .hold(1'b0),
 				.in(fw_data2_s3), .out(data2_s4));
 
 	// write register
@@ -253,15 +267,15 @@ module cpu(
 	wire [4:0]	wrreg_s4;
 	assign wrreg = (regdst_s3) ? rd_s3 : rt_s3;
 	// pass to stage 4
-	regr #(.N(5)) reg_wrreg(.clk(clk), .clear(branch_flush), .hold(1'b0),
+	regr #(.N(5)) reg_wrreg(.clk(clk), .clear(flush_s3), .hold(1'b0),
 				.in(wrreg), .out(wrreg_s4));
 
 	wire [1:0] branch_s4;
-	regr #(.N(2)) branch_s3_s4(.clk(clk), .clear(branch_flush), .hold(1'b0),
+	regr #(.N(2)) branch_s3_s4(.clk(clk), .clear(flush_s3), .hold(1'b0),
 				.in(branch_s3), .out(branch_s4));
 
 	wire [31:0] baddr_s4;
-	regr #(.N(32)) baddr_s3_s4(.clk(clk), .clear(branch_flush), .hold(1'b0),
+	regr #(.N(32)) baddr_s3_s4(.clk(clk), .clear(flush_s3), .hold(1'b0),
 				.in(baddr_s3), .out(baddr_s4));
 	// }}}
 
@@ -305,8 +319,6 @@ module cpu(
 			default: pcsrc <= 1'b0;
 		endcase
 	end
-	wire branch_flush;
-	assign branch_flush = pcsrc;
 	// }}}
 			
 	// {{{ stage 5, WB (write back)
