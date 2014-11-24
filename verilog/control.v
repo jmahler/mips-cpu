@@ -11,34 +11,41 @@ module control(
 		output wire [1:0]	aluop,
 		output wire			memwrite, alusrc, regwrite);
 
-	wire 		and1, and2, and3, and5, and6;
-	wire [5:0] 	oc;
+	reg oc_lw, oc_addi, oc_beq, oc_sw, oc_bne, oc_add;
+	always @(*) begin
+		oc_lw   <= 1'b0;
+		oc_addi <= 1'b0;
+		oc_beq  <= 1'b0;
+		oc_sw   <= 1'b0;
+		oc_bne  <= 1'b0;
+		oc_add  <= 1'b0;
+		case (opcode)
+			6'b100011: oc_lw   <= 1'b1;	/* lw */
+			6'b001000: oc_addi <= 1'b1;	/* addi */
+			6'b000100: oc_beq  <= 1'b1;	/* beq */
+			6'b101011: oc_sw   <= 1'b1;	/* sw */
+			6'b000101: oc_bne  <= 1'b1;	/* bne */
+			6'b000000: oc_add  <= 1'b1;	/* add */
+		endcase
+	end
 
-	assign oc = opcode;
+	assign regdst = ~(oc_lw | oc_addi);
 
-	assign and1 = ( oc[0] &  oc[1] & ~oc[2] & ~oc[3] & ~oc[4] &  oc[5]);
-	assign and2 = (~oc[0] & ~oc[1] & ~oc[2] &  oc[3] & ~oc[4] & ~oc[5]);
-	assign and3 = (~oc[0] & ~oc[1] &  oc[2] & ~oc[3] & ~oc[4] & ~oc[5]); // beq
-	assign and5 = ( oc[0] &  oc[1] & ~oc[2] &  oc[3] & ~oc[4] &  oc[5]);
-	assign and6 = ( oc[0] & ~oc[1] &  oc[2] & ~oc[3] & ~oc[4] & ~oc[5]); // bne
+	assign branch[`BRANCH_BEQ] = oc_beq;
+	assign branch[`BRANCH_BNE] = oc_bne;
 
-	assign regdst = ~(and1 | and2);
+	assign memread = oc_lw;
 
-	assign branch[`BRANCH_BEQ] = and3;
-	assign branch[`BRANCH_BNE] = and6;
+	assign memtoreg = oc_lw;
 
-	assign memread = and1;
+	assign aluop[0] = oc_beq | oc_bne;
+	assign aluop[1] = ~(oc_lw | oc_addi | oc_beq | oc_sw | oc_bne);
 
-	assign memtoreg = and1;
+	assign memwrite = oc_sw;
 
-	assign aluop[0] = and3 | and6;
-	assign aluop[1] = ~(and1 | and2 | and3 | and5 | and6);
+	assign alusrc = oc_lw | oc_addi | oc_sw;
 
-	assign memwrite = and5;
-
-	assign alusrc = and1 | and2 | and5;
-
-	assign regwrite = ~(and3 | and5 | and6);
+	assign regwrite = ~(oc_beq | oc_sw | oc_bne);
 endmodule
 
 `endif
