@@ -160,7 +160,8 @@ module cpu(
 
 	// control (opcode -> ...)
 	wire		regdst;
-	wire [1:0]	branch_s2;
+	wire		branch_eq_s2;
+	wire		branch_ne_s2;
 	wire		memread;
 	wire		memwrite;
 	wire		memtoreg;
@@ -169,7 +170,8 @@ module cpu(
 	wire		alusrc;
 	//
 	control ctl1(.opcode(opcode), .regdst(regdst),
-				.branch(branch_s2), .memread(memread),
+				.branch_eq(branch_eq_s2), .branch_ne(branch_ne_s2),
+				.memread(memread),
 				.memtoreg(memtoreg), .aluop(aluop),
 				.memwrite(memwrite), .alusrc(alusrc),
 				.regwrite(regwrite));
@@ -197,9 +199,10 @@ module cpu(
 			.out({regdst_s3, memread_s3, memwrite_s3,
 					memtoreg_s3, aluop_s3, regwrite_s3, alusrc_s3}));
 
-	wire [1:0] branch_s3;
+	wire branch_eq_s3, branch_ne_s3;
 	regr #(.N(2)) branch_s2_s3(.clk(clk), .clear(flush_s2), .hold(1'b0),
-				.in(branch_s2), .out(branch_s3));
+				.in({branch_eq_s2, branch_ne_s2}),
+				.out({branch_eq_s3, branch_ne_s3}));
 
 	wire [31:0] baddr_s3;
 	regr #(.N(32)) baddr_s2_s3(.clk(clk), .clear(flush_s2), .hold(1'b0),
@@ -270,9 +273,10 @@ module cpu(
 	regr #(.N(5)) reg_wrreg(.clk(clk), .clear(flush_s3), .hold(1'b0),
 				.in(wrreg), .out(wrreg_s4));
 
-	wire [1:0] branch_s4;
+	wire branch_eq_s4, branch_ne_s4;
 	regr #(.N(2)) branch_s3_s4(.clk(clk), .clear(flush_s3), .hold(1'b0),
-				.in(branch_s3), .out(branch_s4));
+				.in({branch_eq_s3, branch_ne_s3}),
+				.out({branch_eq_s4, branch_ne_s4}));
 
 	wire [31:0] baddr_s4;
 	regr #(.N(32)) baddr_s3_s4(.clk(clk), .clear(flush_s3), .hold(1'b0),
@@ -314,8 +318,8 @@ module cpu(
 	reg pcsrc;
 	always @(*) begin
 		case (1'b1)
-			branch_s4[`BRANCH_BEQ]: pcsrc <= zero_s4;
-			branch_s4[`BRANCH_BNE]: pcsrc <= ~(zero_s4);
+			branch_eq_s4: pcsrc <= zero_s4;
+			branch_ne_s4: pcsrc <= ~(zero_s4);
 			default: pcsrc <= 1'b0;
 		endcase
 	end
