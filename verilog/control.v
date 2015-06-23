@@ -6,46 +6,57 @@
 
 module control(
 		input  wire	[5:0]	opcode,
-		output wire 		regdst, memread, memtoreg,
-		output wire [1:0]	branch,
-		output wire [1:0]	aluop,
-		output wire			memwrite, alusrc, regwrite);
+		output reg [1:0]	branch,
+		output reg [1:0]	aluop,
+		output reg			memread, memwrite, memtoreg,
+		output reg			regdst, regwrite, alusrc);
 
-	reg oc_lw, oc_addi, oc_beq, oc_sw, oc_bne, oc_add;
 	always @(*) begin
-		oc_lw   <= 1'b0;
-		oc_addi <= 1'b0;
-		oc_beq  <= 1'b0;
-		oc_sw   <= 1'b0;
-		oc_bne  <= 1'b0;
-		oc_add  <= 1'b0;
+		/* defaults */
+		aluop[1:0]	<= 2'b10;
+		alusrc		<= 1'b0;
+		branch[1:0] <= 2'b00;
+		memread		<= 1'b0;
+		memtoreg	<= 1'b0;
+		memwrite	<= 1'b0;
+		regdst		<= 1'b1;
+		regwrite	<= 1'b1;
+
 		case (opcode)
-			6'b100011: oc_lw   <= 1'b1;	/* lw */
-			6'b001000: oc_addi <= 1'b1;	/* addi */
-			6'b000100: oc_beq  <= 1'b1;	/* beq */
-			6'b101011: oc_sw   <= 1'b1;	/* sw */
-			6'b000101: oc_bne  <= 1'b1;	/* bne */
-			6'b000000: oc_add  <= 1'b1;	/* add */
+			6'b100011: begin	/* lw */
+				memread  <= 1'b1;
+				regdst   <= 1'b0;
+				memtoreg <= 1'b1;
+				aluop[1] <= 1'b0;
+				alusrc   <= 1'b1;
+			end
+			6'b001000: begin	/* addi */
+				regdst   <= 1'b0;
+				aluop[1] <= 1'b0;
+				alusrc   <= 1'b1;
+			end
+			6'b000100: begin	/* beq */
+				aluop[0]  <= 1'b1;
+				aluop[1]  <= 1'b0;
+				branch[0] <= 1'b1;
+				regwrite  <= 1'b0;
+			end
+			6'b101011: begin	/* sw */
+				memwrite <= 1'b1;
+				aluop[1] <= 1'b0;
+				alusrc   <= 1'b1;
+				regwrite <= 1'b0;
+			end
+			6'b000101: begin	/* bne */
+				aluop[0]  <= 1'b1;
+				aluop[1]  <= 1'b0;
+				branch[1] <= 1'b1;
+				regwrite  <= 1'b0;
+			end
+			6'b000000: begin	/* add */
+			end
 		endcase
 	end
-
-	assign regdst = ~(oc_lw | oc_addi);
-
-	assign branch[`BRANCH_BEQ] = oc_beq;
-	assign branch[`BRANCH_BNE] = oc_bne;
-
-	assign memread = oc_lw;
-
-	assign memtoreg = oc_lw;
-
-	assign aluop[0] = oc_beq | oc_bne;
-	assign aluop[1] = ~(oc_lw | oc_addi | oc_beq | oc_sw | oc_bne);
-
-	assign memwrite = oc_sw;
-
-	assign alusrc = oc_lw | oc_addi | oc_sw;
-
-	assign regwrite = ~(oc_beq | oc_sw | oc_bne);
 endmodule
 
 `endif
