@@ -5,7 +5,7 @@
  *
  * DESCRIPTION
  *
- * Given a binary file, convert each byte to ascii hex, with one byte
+ * Given a binary file, convert each byte to ascii hex, with one word
  * per line.
  *
  *   bin2hex t0001-no_hazard.elf > t0001-no_hazard.hex
