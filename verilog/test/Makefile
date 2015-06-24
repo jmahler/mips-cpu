@@ -17,6 +17,12 @@ all: $(OBJS) $(ELFS) $(OUTS) $(HEXS) check
 bin2hex: bin2hex.c
 	gcc -Wall $< -o $@
 
+# prevent Make from removing these intermediate files
+.PRECIOUS: %.elf %.text
+
+# To get a dump of the assembly code:
+#mips-linux-gnu-objdump --section=.text -D <file>.elf
+
 # cancel implicit rule for .c -> (exe)
 %: %.c
 
@@ -67,4 +73,4 @@ clean:
 	-rm -f *.out
 	-rm -f t*.hex
 	-rm -f *.elf
-
+	-rm -f *.text
