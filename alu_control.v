@@ -7,7 +7,7 @@ module alu_control(funct, aluop, aluctl);
 	input wire [1:0] aluop;
 	output reg [3:0] aluctl;
 
-	reg [3:0] _funct = 4'd0;
+	reg [3:0] _funct;
 
 	always @(*) begin
 		case(funct[3:0])
