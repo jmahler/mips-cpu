@@ -19,10 +19,10 @@ module alu(
 	assign sub_ab = a - b;
 	assign add_ab = a + b;
 
-	// overflow occurs (with 2's complement numbers) when
+	// overflow occurs (with 2s complement numbers) when
 	// the operands have the same sign, but the sign of the result is
 	// different.  The actual sign is the opposite of the result.
-	// It is also dependent on wheter addition or subtraction is performed.
+	// It is also dependent on whether addition or subtraction is performed.
 	assign oflow_add = (a[31] == b[31] && add_ab[31] != a[31]) ? 1 : 0;
 	assign oflow_sub = (a[31] == b[31] && sub_ab[31] != a[31]) ? 1 : 0;
 
