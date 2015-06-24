@@ -61,7 +61,7 @@ module cpu(
 		flush_s1 <= 1'b0;
 		flush_s2 <= 1'b0;
 		flush_s3 <= 1'b0;
-		if (pcsrc) begin
+		if (pcsrc | jump_s4) begin
 			flush_s1 <= 1'b1;
 			flush_s2 <= 1'b1;
 			flush_s3 <= 1'b1;
@@ -84,6 +84,8 @@ module cpu(
 			pc <= pc;
 		else if (pcsrc == 1'b1)
 			pc <= baddr_s4;
+		else if (jump_s4 == 1'b1)
+			pc <= jaddr_s4;
 		else
 			pc <= pc4;
 	end
@@ -114,7 +116,7 @@ module cpu(
 	wire [4:0]  rd;
 	wire [15:0] imm;
 	wire [4:0]  shamt;
-	wire [25:0] jimm;  // jump, immediate
+	wire [31:0] jaddr_s2;
 	wire [31:0] seimm;  // sign extended immediate
 	//
 	assign opcode   = inst_s2[31:26];
@@ -123,7 +125,7 @@ module cpu(
 	assign rd       = inst_s2[15:11];
 	assign imm      = inst_s2[15:0];
 	assign shamt    = inst_s2[10:6];
-	assign jimm     = inst_s2[25:0];
+	assign jaddr_s2 = {pc[31:28], inst_s2[25:0], {2{1'b0}}};
 	assign seimm 	= {{16{inst_s2[15]}}, inst_s2[15:0]};
 
 	// register memory
@@ -168,13 +170,14 @@ module cpu(
 	wire [1:0]	aluop;
 	wire		regwrite;
 	wire		alusrc;
+	wire		jump_s2;
 	//
 	control ctl1(.opcode(opcode), .regdst(regdst),
 				.branch_eq(branch_eq_s2), .branch_ne(branch_ne_s2),
 				.memread(memread),
 				.memtoreg(memtoreg), .aluop(aluop),
 				.memwrite(memwrite), .alusrc(alusrc),
-				.regwrite(regwrite));
+				.regwrite(regwrite), .jump(jump_s2));
 
 	// shift left, seimm
 	wire [31:0] seimm_sl2;
@@ -207,6 +210,15 @@ module cpu(
 	wire [31:0] baddr_s3;
 	regr #(.N(32)) baddr_s2_s3(.clk(clk), .clear(flush_s2), .hold(1'b0),
 				.in(baddr_s2), .out(baddr_s3));
+
+	wire jump_s3;
+	regr #(.N(1)) reg_jump_s3(.clk(clk), .clear(flush_s2), .hold(1'b0),
+				.in(jump_s2),
+				.out(jump_s3));
+
+	wire [31:0] jaddr_s3;
+	regr #(.N(32)) reg_jaddr_s3(.clk(clk), .clear(flush_s2), .hold(1'b0),
+				.in(jaddr_s2), .out(jaddr_s3));
 	// }}}
 
 	// {{{ stage 3, EX (execute)
@@ -281,6 +293,15 @@ module cpu(
 	wire [31:0] baddr_s4;
 	regr #(.N(32)) baddr_s3_s4(.clk(clk), .clear(flush_s3), .hold(1'b0),
 				.in(baddr_s3), .out(baddr_s4));
+
+	wire jump_s4;
+	regr #(.N(1)) reg_jump_s4(.clk(clk), .clear(flush_s3), .hold(1'b0),
+				.in(jump_s3),
+				.out(jump_s4));
+
+	wire [31:0] jaddr_s4;
+	regr #(.N(32)) reg_jaddr_s4(.clk(clk), .clear(flush_s3), .hold(1'b0),
+				.in(jaddr_s3), .out(jaddr_s4));
 	// }}}
 
 	// {{{ stage 4, MEM (memory)

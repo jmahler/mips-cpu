@@ -6,7 +6,8 @@ module control(
 		output reg			branch_eq, branch_ne,
 		output reg [1:0]	aluop,
 		output reg			memread, memwrite, memtoreg,
-		output reg			regdst, regwrite, alusrc);
+		output reg			regdst, regwrite, alusrc,
+		output reg			jump);
 
 	always @(*) begin
 		/* defaults */
@@ -19,6 +20,7 @@ module control(
 		memwrite	<= 1'b0;
 		regdst		<= 1'b1;
 		regwrite	<= 1'b1;
+		jump		<= 1'b0;
 
 		case (opcode)
 			6'b100011: begin	/* lw */
@@ -52,6 +54,9 @@ module control(
 				regwrite  <= 1'b0;
 			end
 			6'b000000: begin	/* add */
+			end
+			6'b000010: begin	/* j jump */
+				jump <= 1'b1;
 			end
 		endcase
 	end
