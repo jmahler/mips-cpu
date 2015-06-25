@@ -1,6 +1,8 @@
 `ifndef _alu
 `define _alu
 
+/*`include "rc_adder.v"*/
+
 module alu(
 		input		[3:0]	ctl,
 		input		[31:0]	a, b,
@@ -18,6 +20,7 @@ module alu(
 
 	assign sub_ab = a - b;
 	assign add_ab = a + b;
+	/*rc_adder #(.N(32)) add0(.a(a), .b(b), .s(add_ab));*/
 
 	// overflow occurs (with 2s complement numbers) when
 	// the operands have the same sign, but the sign of the result is
