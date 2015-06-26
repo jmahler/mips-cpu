@@ -2,7 +2,7 @@
  * regm - register memory
  *
  * A 32-bit register memory.  Two registers can be read at once. The
- * variables `read1` and `read2` specifiy which registers to read.  The
+ * variables `read1` and `read2` specify which registers to read.  The
  * output is placed in `data1` and `data2`.
  *
  * If `regwrite` is high, the value in `wrdata` will be written to the
