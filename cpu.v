@@ -33,6 +33,11 @@ module cpu(
 	parameter NMEM = 20;  // number in instruction memory
 	parameter IM_DATA = "im_data.txt";
 
+	wire regwrite_s5;
+	wire [4:0] wrreg_s5;
+	wire [31:0]	wrdata_s5;
+	reg stall_s1_s2;
+
 	// {{{ diagnostic outputs
 	initial begin
 		if (`DEBUG_CPU_STAGES) begin
@@ -307,7 +312,6 @@ module cpu(
 	// {{{ stage 4, MEM (memory)
 
 	// pass regwrite and memtoreg to stage 5
-	wire regwrite_s5;
 	wire memtoreg_s5;
 	regr #(.N(2)) reg_regwrite_s4(.clk(clk), .clear(1'b0), .hold(1'b0),
 				.in({regwrite_s4, memtoreg_s4}),
@@ -330,7 +334,6 @@ module cpu(
 				.out(alurslt_s5));
 
 	// pass wrreg to stage 5
-	wire [4:0] wrreg_s5;
 	regr #(.N(5)) reg_wrreg_s4(.clk(clk), .clear(1'b0), .hold(1'b0),
 				.in(wrreg_s4),
 				.out(wrreg_s5));
@@ -348,7 +351,6 @@ module cpu(
 			
 	// {{{ stage 5, WB (write back)
 
-	wire [31:0]	wrdata_s5;
 	assign wrdata_s5 = (memtoreg_s5 == 1'b1) ? rdata_s5 : alurslt_s5;
 
 	// }}}
@@ -399,7 +401,6 @@ module cpu(
 	 *   lw  $1, 16($3)  ; I-type, rt_s3 = $1, memread_s3 = 1
 	 *   add $2, $1, $1  ; R-type, rs_s2 = $1, rt_s2 = $1, memread_s2 = 0
 	 */
-	reg stall_s1_s2;
 	always @(*) begin
 		if (memread_s3 == 1'b1 && ((rt == rt_s3) || (rs == rt_s3)) ) begin
 			stall_s1_s2 <= 1'b1;  // perform a stall
