@@ -33,11 +33,11 @@ module regm(
 		input wire	[31:0]	wrdata);
 
 	reg [31:0] mem [0:31];  // 32-bit memory with 32 entries
-	mem[0] = 5'd0; // Hardwired $zero to be 0
 
 	reg [31:0] _data1, _data2;
 
 	initial begin
+		mem[0] = 5'd0; // Hardwired $zero to be 0
 		if (`DEBUG_CPU_REG) begin
 			$display("     $v0,      $v1,      $t0,      $t1,      $t2,      $t3,      $t4,      $t5,      $t6,      $t7");
 			$monitor("%x, %x, %x, %x, %x, %x, %x, %x, %x, %x",
