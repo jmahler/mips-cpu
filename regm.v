@@ -56,18 +56,14 @@ module regm(
 	end
 
 	always @(*) begin
-		if (read1 == 5'd0)
-			_data1 = 32'd0;
-		else if ((read1 == wrreg) && regwrite)
+		if ((read1 == wrreg) && regwrite)
 			_data1 = wrdata;
 		else
 			_data1 = mem[read1][31:0];
 	end
 
 	always @(*) begin
-		if (read2 == 5'd0)
-			_data2 = 32'd0;
-		else if ((read2 == wrreg) && regwrite)
+		if ((read2 == wrreg) && regwrite)
 			_data2 = wrdata;
 		else
 			_data2 = mem[read2][31:0];
