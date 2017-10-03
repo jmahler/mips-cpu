@@ -33,6 +33,7 @@ module regm(
 		input wire	[31:0]	wrdata);
 
 	reg [31:0] mem [0:31];  // 32-bit memory with 32 entries
+	mem[0] = 5'd0; // Hardwired $zero to be 0
 
 	reg [31:0] _data1, _data2;
 
